@@ -3,20 +3,24 @@
         <headTop signin-up='home'>
             <p slot="home" class="home">Tip:请选择您当前的位置</p>
         </headTop>
+
         <div class="container">
             <div class="city_tip">
                 <span>当前定位城市：{{cityname}}</span>
             </div>
 
             <form class="city_form" v-on:submit.prevent>
-                <div>
-                    <el-input v-model="inputVaule" placeholder="输入学校、商务楼、地址" required></el-input>
-                    <el-button type="primary" @click="postpois">搜索</el-button>
-                </div>
+                <!-- 搜索框 -->
+                <el-autocomplete class="search" popper-class="my-autocomplete" :popper-append-to-body="false" v-model="inputVaule" :fetch-suggestions="querySearch" placeholder="输入学校、商务楼、地址" @select="handleSelect" >
+                    <i class="el-icon-delete el-input__icon" slot="suffix" @click="handleIconClick"></i>
+                    <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                    </template>
+                    <el-button slot="append" icon="el-icon-search" @click="postpois"></el-button>
+                </el-autocomplete>
             </form>
 
-            <header v-if="historytitle" class="pois_search_history">搜索历史</header>
-        
             <ul class="getpois_ul">
                 <li v-for="(item, index) in placelist" @click='nextpage(index, item.geohash)' :key="index">
                     <h4 class="pois_name ellipsis">{{item.name}}</h4>
@@ -33,10 +37,7 @@
 
 <script>
 import headTop from 'src/components/header/head'
-import { 
-    // cityGuess , 
-    searchplace 
-} from 'src/service/getData'
+import { cityGuess , searchplace } from 'src/service/getData'
 import { getStore, setStore, removeStore } from 'src/config/mUtils'
 
 export default {
@@ -52,27 +53,23 @@ export default {
             placeHistory:[], // 历史搜索记录
             historytitle: true, // 默认显示搜索历史头部，点击搜索后隐藏
             placeNone: false, // 搜索无结果，显示提示信息
+
+            historylist:[]
         }
     },
 	mounted(){
         // 获取当前城市
-        // cityGuess().then(res => {
-            // this.cityname = res.data.name;
-            // this.cityid = res.data.id;
-        //     console.log(res)
-        //     console.log(1111111)
-        // })
+        cityGuess().then(res => {
+            this.cityname = res.data.name;
+            this.cityid = res.data.id;
+        });
         this.initData();
     },
     methods:{
         //初始化数据
         initData(){
             //获取搜索历史记录
-            if (getStore('placeHistory')) {
-                this.placelist = JSON.parse(getStore('placeHistory'));
-            }else{
-                this.placelist = [];
-            }
+            this.historylist = JSON.parse(getStore('placeHistory'));
         },
         //发送搜索信息inputVaule
         postpois(){
@@ -112,6 +109,34 @@ export default {
         clearAll(){
             removeStore('placeHistory');
             this.initData();
+        },
+
+
+        // 点击输入框时列出历史记录,queryString为输入字符串，cb是 调用 callback 返回建议列表的数据
+        querySearch(queryString, cb) {
+            var historylist = this.historylist.map(object=>{return {
+                value:object.name,
+                address:object.address,
+                geohash:object.geohash,
+                latitude:object.latitude,
+                longitude:object.longitude
+            }});
+            //如果输入字符串为非空，则显示相关历史记录，如果为空就显示全部历史记录
+            var results = queryString ? historylist.filter(this.createFilter(queryString)) : historylist;
+            cb(results);
+        },
+        //过滤输入字符串
+        createFilter(queryString) {
+            return (restaurant) => {
+            return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            };
+        },
+        //选中后处理
+        handleSelect(item) {
+            console.log(item);
+        },
+        handleIconClick(ev) {
+        console.log(ev);
         }
     },
 }
@@ -126,12 +151,12 @@ export default {
     .home {
         @include center;
         width: 50%;
-        color: #fff;
+        // color: #fff;
         text-align: center;
         margin-left: -0.5rem;
     }
     .container {
-        margin: 0 20%;
+        // margin: 0 20%;
         .city_tip {
             @include fj;
             line-height: 1.45rem;
@@ -142,14 +167,30 @@ export default {
             }
         }
         .city_form{
-            background-color: #fff;
-            border-top: 1px solid $bc;
-            border-bottom: 1px solid $bc;
-            padding-top: 0.4rem;
-            div{
-                width: 90%;
-                margin: 0 auto;
-                text-align: center;
+            // text-align: center;
+            // border-top: 1px solid $bc;
+            // border-bottom: 1px solid $bc;
+            .search{
+                width: 50%;
+            }
+            .my-autocomplete {
+                li {
+                    line-height: normal;
+                    padding: 7px;
+
+                    .name {
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    }
+                    .addr {
+                    font-size: 12px;
+                    color: #b4b4b4;
+                    }
+
+                    .highlighted .addr {
+                    color: #ddd;
+                    }
+                }
             }
         }
         .pois_search_history{
@@ -159,7 +200,7 @@ export default {
             @include font(0.475rem, 0.8rem);
         }
         .getpois_ul{
-            background-color: #fff;
+            // background-color: #fff;
             border-top: 1px solid $bc;
             text-align: center;
             li{

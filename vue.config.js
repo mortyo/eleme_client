@@ -4,10 +4,11 @@ function resolve(dir){
 }
 
 module.exports={
+    //代理服务器
     devServer: {
-        proxy: 'https://elm.cangdu.org/'
-    },
-    runtimeCompiler: true,
+        proxy: 'http://elm.cangdu.org'
+      },
+    //路径别名
     chainWebpack:(config)=>{
         config.resolve.alias
         .set('src',resolve('./src'))

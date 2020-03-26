@@ -91,9 +91,9 @@ export default {
 		category_id,
 		item_id,
 		food_id,
-		name,
-		price,
-		specs,
+		// name,
+		// price,
+		// specs,
 	}) {
 		let cart = state.cartList;
 		let shop = (cart[shopid] || {});

@@ -1,5 +1,5 @@
 import { getStyle } from '../../config/mUtils'
-import { imgBaseUrl, localapi, proapi } from '../../config/env'
+// import { imgBaseUrl, localapi, proapi } from '../../config/env'
 //加载更多
 export const loadMore = {
 	//自定义指令：v-load-more
@@ -28,7 +28,7 @@ export const loadMore = {
 				el.addEventListener('touchstart', () => {
 					height = heightEl.clientHeight;
 					if (scrollType == 2) {
-						height = height
+						height = height*1
 					}
 					setTop = el.offsetTop;
 					paddingBottom = getStyle(el, 'paddingBottom');
