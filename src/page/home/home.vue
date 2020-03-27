@@ -1,13 +1,12 @@
 <template>
   	<div>
-        <headTop signin-up='home'>
-            <p slot="home" class="home">Tip:请选择您当前的位置</p>
-        </headTop>
+        <headTop></headTop>
 
         <div class="container">
             <!-- 搜索框 -->
             <form class="city_form" v-on:submit.prevent>
-                <p class="city_tip">当前定位城市：{{cityname}}</p><br>
+                <p class="tip">当前定位城市：<span>{{cityname}}</span></p>
+                <p class="tip">请在下方搜索并选择您当前的详细位置👇👇👇</p>
                 <el-autocomplete class="search" popper-class="my-autocomplete" :popper-append-to-body="false" v-model="inputVaule" :fetch-suggestions="querySearch" placeholder="输入学校、商务楼、地址" @select="handleSelect" >
                     <i class="el-icon-delete el-input__icon" slot="suffix" @click="handleIconClick"></i>
                     <template slot-scope="{ item }">
@@ -143,16 +142,18 @@ export default {
     .home {
         @include center;
         width: 50%;
-        // color: #fff;
         text-align: center;
         margin-left: -0.5rem;
     }
     .container {
         .city_form{
             text-align: center;
-            .city_tip {
+            .tip {
                 margin: 0 25%;
                 text-align: left;
+                span {
+                    color: #409EFF;
+                }
             }
             .search{
                 width: 50%;

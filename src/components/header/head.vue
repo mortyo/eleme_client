@@ -5,15 +5,12 @@
             <el-menu-item index="搜索" @click = "gotoAddress({path: `/search/${geohash}`})" class="guide_item">搜索</el-menu-item>
             <el-menu-item index="订单" @click = "gotoAddress('/order')" class="guide_item">订单</el-menu-item>
             <el-menu-item index="我的" @click = "gotoAddress('/profile')" class="guide_item">我的</el-menu-item>
-
-            <slot name='home'></slot>
+            <!-- 所有插槽 -->
             <slot name='search'></slot>
             <slot name="edit"></slot>
-            <slot name="msite-title"></slot>
             <slot name="changecity"></slot>
             <slot name="changeLogin"></slot>
             <slot name="shop"></slot>
-            
             <!-- 显示返回 -->
             <section class="head_goback" v-if="goBack" @click="$router.go(-1)">
                 <i class="el-icon-arrow-left">返回</i>

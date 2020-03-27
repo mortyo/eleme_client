@@ -1,11 +1,12 @@
 <template>
     <div>
-    	<head-top signin-up='msite'>
-			<router-link to="/home" slot="msite-title" class="msite_title">
-				<span class="title_text ellipsis">{{msiteTitle}}</span>
-			</router-link>
-    	</head-top>
-
+    	<head-top></head-top>
+		<div class="address">
+			<p>当前地址：
+				<span class="msite_title">{{msiteTitle}} </span>
+				<router-link to="/home" class="change">&lt;地址不对？点击切换&gt;</router-link>
+			</p>
+		</div>
 		<!-- 商店导航 -->
 		<div class="shopnav">
 			<router-link v-for="(item, index) in foodTypes" :key="index" :to="{path: '/food', query: {geohash, title: item.title, restaurant_category_id: getCategoryId(item.link)}}" class="link">
@@ -85,17 +86,14 @@ export default {
 
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-	.msite_title{
-		@include center;
-        width: 50%;
-        color: #fff;
-        text-align: center;
-        margin-left: -0.5rem;
-        .title_text{
-            @include sc(0.8rem, #fff);
-            text-align: center;
-            display: block;
-        }
+	.address{
+		text-align: center;
+		// .msite_title{
+
+		// }
+		.change{
+			color: blue;
+		}
 	}
 	.shopnav{
 		text-align: center;
