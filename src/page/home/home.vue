@@ -5,31 +5,26 @@
         </headTop>
 
         <div class="container">
-            <div class="city_tip">
-                <span>当前定位城市：{{cityname}}</span>
-            </div>
-
+            <!-- 搜索框 -->
             <form class="city_form" v-on:submit.prevent>
-                <!-- 搜索框 -->
+                <p class="city_tip">当前定位城市：{{cityname}}</p><br>
                 <el-autocomplete class="search" popper-class="my-autocomplete" :popper-append-to-body="false" v-model="inputVaule" :fetch-suggestions="querySearch" placeholder="输入学校、商务楼、地址" @select="handleSelect" >
                     <i class="el-icon-delete el-input__icon" slot="suffix" @click="handleIconClick"></i>
                     <template slot-scope="{ item }">
+                        <p>历史记录</p>
                         <div class="name">{{ item.value }}</div>
                         <span class="addr">{{ item.address }}</span>
                     </template>
                     <el-button slot="append" icon="el-icon-search" @click="postpois"></el-button>
                 </el-autocomplete>
             </form>
-
+            <!-- 搜索结果 -->
             <ul class="getpois_ul">
-                <li v-for="(item, index) in placelist" @click='nextpage(index, item.geohash)' :key="index">
+                <li v-for="(item, index) in placelist" @click='nextpage(index,item.geohash)' :key="index">
                     <h4 class="pois_name ellipsis">{{item.name}}</h4>
                     <p class="pois_address ellipsis">{{item.address}}</p>
                 </li>
             </ul>
-
-            <footer v-if="historytitle&&placelist.length" class="clear_all_history" @click="clearAll">清空所有</footer>
-
             <div v-if="placeNone" class="search_none_place" >很抱歉！无搜索结果</div>
         </div>
     </div>
@@ -51,10 +46,9 @@ export default {
             cityname:'', // 当前城市名字
             placelist:[], // 搜索城市列表
             placeHistory:[], // 历史搜索记录
-            historytitle: true, // 默认显示搜索历史头部，点击搜索后隐藏
-            placeNone: false, // 搜索无结果，显示提示信息
 
-            historylist:[]
+            historylist:[], // 历史搜索记录
+            placeNone: false, // 搜索无结果，显示提示信息
         }
     },
 	mounted(){
@@ -76,7 +70,6 @@ export default {
             //输入值不为空时才发送信息
             if (this.inputVaule) {
                 searchplace(this.cityid, this.inputVaule).then(res => {
-                    this.historytitle = false;
                     this.placelist = res.data;
                     this.placeNone = res.data.length? false : true;
                 })
@@ -102,9 +95,9 @@ export default {
                 }
             }else {
                 this.placeHistory.push(choosePlace)
-            }
-            setStore('placeHistory',this.placeHistory)
-            this.$router.push({path:'/msite', query:{geohash}})
+            };
+            setStore('placeHistory',this.placeHistory);
+            this.$router.push({path:'/msite', query:{geohash}});
         },
         clearAll(){
             removeStore('placeHistory');
@@ -114,13 +107,13 @@ export default {
 
         // 点击输入框时列出历史记录,queryString为输入字符串，cb是 调用 callback 返回建议列表的数据
         querySearch(queryString, cb) {
-            var historylist = this.historylist.map(object=>{return {
+            var historylist = this.historylist ? this.historylist.map(object=>{return {
                 value:object.name,
                 address:object.address,
                 geohash:object.geohash,
                 latitude:object.latitude,
                 longitude:object.longitude
-            }});
+            }}) : [];
             //如果输入字符串为非空，则显示相关历史记录，如果为空就显示全部历史记录
             var results = queryString ? historylist.filter(this.createFilter(queryString)) : historylist;
             cb(results);
@@ -134,9 +127,11 @@ export default {
         //选中后处理
         handleSelect(item) {
             console.log(item);
+            this.$router.push({path:'/msite', query:{geohash:item.geohash}})
         },
         handleIconClick(ev) {
-        console.log(ev);
+            this.clearAll();
+            console.log(ev)
         }
     },
 }
@@ -145,9 +140,6 @@ export default {
 
 <style lang="scss" scoped>
     @import '../../style/mixin';
-    .infinite-list{
-        height: 100px;
-    }
     .home {
         @include center;
         width: 50%;
@@ -156,22 +148,17 @@ export default {
         margin-left: -0.5rem;
     }
     .container {
-        // margin: 0 20%;
-        .city_tip {
-            @include fj;
-            line-height: 1.45rem;
-            padding: 0 0.45rem;
-            span{
-                @include sc(0.55rem, #666);
-                font-weight: 900;
-            }
-        }
         .city_form{
-            // text-align: center;
-            // border-top: 1px solid $bc;
-            // border-bottom: 1px solid $bc;
+            text-align: center;
+            .city_tip {
+                margin: 0 25%;
+                text-align: left;
+            }
             .search{
                 width: 50%;
+                text-align: left;
+                margin: initial;
+                padding: 0;
             }
             .my-autocomplete {
                 li {
@@ -193,19 +180,10 @@ export default {
                 }
             }
         }
-        .pois_search_history{
-            border-top: 1px solid $bc;
-            border-bottom: 1px solid $bc;
-            padding-left: 0.5rem;
-            @include font(0.475rem, 0.8rem);
-        }
         .getpois_ul{
-            // background-color: #fff;
-            border-top: 1px solid $bc;
-            text-align: center;
             li{
-                margin: 0 auto;
-                padding-top: 0.65rem;
+                margin: 0 25%;
+                padding-top: 21px;
                 border-bottom: 1px solid $bc;
                 .pois_name{
                     margin: 0 auto 0.35rem;
@@ -219,11 +197,9 @@ export default {
                 }
             }
         }
-        .clear_all_history{
-            @include sc(0.7rem, #666);
+        .search_none_place{
             text-align: center;
-            line-height: 2rem;
-            background-color: #fff;
+            margin: 21px auto;
         }
-    }
+}
 </style>
