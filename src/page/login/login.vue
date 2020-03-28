@@ -1,40 +1,34 @@
 <template>
-    <div class="loginContainer">
-        <head-top :head-title="'密码登录'" goBack="true"></head-top>
-        <div class="container">
-            <form class="loginForm">
-                <el-input v-model.lazy="userAccount" placeholder="账号" clearable></el-input>
-                <el-input v-model="passWord" placeholder="密码" show-password></el-input>
-                <el-input v-model="codeNumber" placeholder="验证码"></el-input>
-                <div class="img_change_img">
-                    <img v-show="captchaCodeImg" :src="captchaCodeImg">
-                    <div class="change_img" @click="getCaptchaCode">
-                        <p>看不清</p>
-                        <p>换一张</p>
-                    </div>
-                </div>
-            </form>
-            <p class="login_tips">
-                温馨提示：未注册过的账号，登录时将自动注册
-            </p>
-            <p class="login_tips">
-                注册过的用户可凭账号密码登录
-            </p>
-            <el-button type="primary" @click="Login">登录</el-button>
-            <router-link to="/forget" class="to_forget">重置密码？</router-link>
-
-            <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="closeTip" :alertText="alertText"></alert-tip>
-        </div>
+    <div class="container">
+        <form class="loginForm">
+            <label for="account">请输入账号</label>
+            <el-input id="account" class="input" tabindex="1" v-model.lazy="userAccount" prefix-icon="el-icon-user" placeholder="账号" clearable></el-input>
+            <label for="password">请输入密码</label>
+            <router-link to="/forget" class="forget">忘记密码？</router-link>
+            <el-input id="password" class="input" tabindex="2" v-model="passWord" prefix-icon="el-icon-lock" placeholder="密码" show-password></el-input>
+            <div class="captchaCode">
+                <el-input v-model="codeNumber" class="code_input" tabindex="3" placeholder="验证码"></el-input>
+                <img v-show="captchaCodeImg" :src="captchaCodeImg" @click="getCaptchaCode">
+                <p @click="getCaptchaCode">换一张</p>
+            </div>
+            <el-button type="primary" class="login" tabindex="4" round autofocus @click="Login">登录</el-button>
+        </form>
+        <p class="login_tips">
+            Tip：未注册过的账号，登录时将自动注册，注册过的用户可凭账号密码登录
+        </p>
+        <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="closeTip" :alertText="alertText"></alert-tip>
     </div>
 </template>
 
 <script>
-    import headTop from '../../components/header/head'
     import alertTip from '../../components/common/alertTip'
     import { mapMutations } from 'vuex'
     import { getcaptchas, accountLogin } from '../../service/getData'
 
     export default {
+        components: {
+            alertTip
+        },
         data(){
             return {
                 userInfo: null, //获取到的用户信息
@@ -49,10 +43,6 @@
         created(){
             this.getCaptchaCode();
         },
-        components: {
-            headTop,
-            alertTip,
-        },
         methods: {
             ...mapMutations([
                 'RECORD_USERINFO',
@@ -64,10 +54,11 @@
             },
             //发送登录信息
             async Login(){
+                this.$message('这是一条消息提示');
                 if (!this.userAccount) {
                     this.showAlert = true;
-                    this.alertText = '请输入手机号/邮箱/用户名';
-                    return
+                    this.alertText = '请输入用户名';
+                    return  //重新开始
                 }else if(!this.passWord){
                     this.showAlert = true;
                     this.alertText = '请输入密码';
@@ -80,16 +71,16 @@
                 //用户名登录
                 let res = await accountLogin(this.userAccount, this.passWord, this.codeNumber);
                 this.userInfo = res.data
+                console.log(res.data)
                 
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
                 if (!this.userInfo.user_id) {
                     this.showAlert = true;
                     this.alertText = this.userInfo.message;
-                    if (!this.loginWay) this.getCaptchaCode();
+                    this.getCaptchaCode();
                 }else{
                     this.RECORD_USERINFO(this.userInfo);
                     this.$router.go(-1);
-
                 }
             },
             closeTip(){
@@ -103,67 +94,51 @@
 <style lang="scss" scoped>
     @import '../../style/mixin';
     .container{
-        text-align: center;
-        margin: 0 40%
+        // text-align: center;
     }
     .loginForm{
         background-color: #fff;
-        margin-top: .6rem;
-        .input_container{
-            display: flex;
-            justify-content: space-between;
-            padding: .6rem .8rem;
-            border-bottom: 1px solid #f1f1f1;
-            input{
-                @include sc(.7rem, #666);
+        width: 300px;
+        padding: 25px;
+        border: #d8dee2 solid 1px;
+        border-radius: 5px;
+        margin: 60px auto;
+        label {
+            margin: 5px;
+        }
+        .input {
+            display: block;
+            width: 300px;
+        }
+        .forget{
+            @include sc(.6rem, #3b95e9);
+        }
+        .captchaCode {
+            width: 300px;
+            height: 40px;
+            margin-top: 21px;
+            .code_input {
+                width: 100px;
+                position: relative;
+                top: -15px;
             }
-            button{
-                @include sc(.65rem, #fff);
-                font-family: Helvetica Neue,Tahoma,Arial;
-                padding: .28rem .4rem;
-                border: 1px;
-                border-radius: 0.15rem;
+            img {
+                height: 40px;
+                cursor: pointer;
             }
-            .right_phone_number{
-                background-color: #4cd964;
+            p {
+                color:  #3b95e9;
+                float: right;
+                line-height: 200%;
+                cursor: pointer;
             }
         }
-        .captcha_code_container{
-            height: 2.2rem;
-            .img_change_img{
-                display: flex;
-                align-items: center;
-                img{
-                    @include wh(3.5rem, 1.5rem);
-                    margin-right: .2rem;
-                }
-                .change_img{
-                    display: flex;
-                    flex-direction: 'column';
-                    flex-wrap: wrap;
-                    width: 2rem;
-                    justify-content: center;
-                    p{
-                        @include sc(.55rem, #666);
-                    }
-                    p:nth-of-type(2){
-                        color: #3b95e9;
-                        margin-top: .2rem;
-                    }
-                }
-            }
+        .login {
+            margin-top: 21px;
+            width: 100%;
         }
     }
     .login_tips{
-        @include sc(.5rem, red);
-        padding: .4rem .6rem;
-        line-height: .5rem;
-        a{
-            color: #3b95e9;
-        }
-    }
-    .to_forget{
-        @include sc(.6rem, #3b95e9);
-        margin-right: .3rem;
+        text-align: center;
     }
 </style>

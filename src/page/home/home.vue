@@ -1,31 +1,27 @@
 <template>
-  	<div>
-        <headTop></headTop>
-
-        <div class="container">
-            <!-- 搜索框 -->
-            <form class="city_form" v-on:submit.prevent>
-                <p class="tip">当前定位城市：<span>{{cityname}}</span></p>
-                <p class="tip">请在下方搜索并选择您当前的详细位置👇👇👇</p>
-                <el-autocomplete class="search" popper-class="my-autocomplete" :popper-append-to-body="false" v-model="inputVaule" :fetch-suggestions="querySearch" placeholder="输入学校、商务楼、地址" @select="handleSelect" >
-                    <i class="el-icon-delete el-input__icon" slot="suffix" @click="handleIconClick"></i>
-                    <template slot-scope="{ item }">
-                        <p>历史记录</p>
-                        <div class="name">{{ item.value }}</div>
-                        <span class="addr">{{ item.address }}</span>
-                    </template>
-                    <el-button slot="append" icon="el-icon-search" @click="postpois"></el-button>
-                </el-autocomplete>
-            </form>
-            <!-- 搜索结果 -->
-            <ul class="getpois_ul">
-                <li v-for="(item, index) in placelist" @click='nextpage(index,item.geohash)' :key="index">
-                    <h4 class="pois_name ellipsis">{{item.name}}</h4>
-                    <p class="pois_address ellipsis">{{item.address}}</p>
-                </li>
-            </ul>
-            <div v-if="placeNone" class="search_none_place" >很抱歉！无搜索结果</div>
-        </div>
+    <div class="container">
+        <!-- 搜索框 -->
+        <form class="city_form" v-on:submit.prevent>
+            <p class="tip">当前定位城市：<span>{{cityname}}</span></p>
+            <p class="tip">请在下方搜索并选择您当前的详细位置👇👇👇</p>
+            <el-autocomplete class="search" popper-class="my-autocomplete" :popper-append-to-body="false" v-model="inputVaule" :fetch-suggestions="querySearch" placeholder="输入学校、商务楼、地址" @select="handleSelect" >
+                <i class="el-icon-delete el-input__icon" slot="suffix" @click="handleIconClick"></i>
+                <template slot-scope="{ item }">
+                    <p>历史记录</p>
+                    <div class="name">{{ item.value }}</div>
+                    <span class="addr">{{ item.address }}</span>
+                </template>
+                <el-button slot="append" icon="el-icon-search" @click="postpois"></el-button>
+            </el-autocomplete>
+        </form>
+        <!-- 搜索结果 -->
+        <ul class="getpois_ul">
+            <li v-for="(item, index) in placelist" @click='nextpage(index,item.geohash)' :key="index">
+                <h4 class="pois_name ellipsis">{{item.name}}</h4>
+                <p class="pois_address ellipsis">{{item.address}}</p>
+            </li>
+        </ul>
+        <div v-if="placeNone" class="search_none_place" >很抱歉！无搜索结果</div>
     </div>
 </template>
 
@@ -35,9 +31,7 @@ import { cityGuess , searchplace } from 'src/service/getData'
 import { getStore, setStore, removeStore } from 'src/config/mUtils'
 
 export default {
-    components:{
-        headTop
-    },
+    components: { headTop },
     data(){
         return{
             inputVaule:'', // 搜索地址

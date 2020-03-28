@@ -1,6 +1,5 @@
 <template>
   	<div class="paddingTop search_page">
-        <head-top head-title="搜索" go-back="true"></head-top>
         <div class="container">
             <form class="search_form">
                 <el-input v-model="searchValue" placeholder="请输入商家或美食名称" @input="checkInput"></el-input>
@@ -51,8 +50,6 @@
 </template>
 
 <script>
-import headTop from '../../components/header/head'
-
 import {searchRestaurant} from '../../service/getData'
 import {imgBaseUrl} from '../../config/env'
 import {getStore, setStore} from '../../config/mUtils'
@@ -80,7 +77,7 @@ export default {
         }
     },
     components:{
-        headTop,
+
     },
     methods:{
         //点击提交按钮，搜索结果并显示，同时将搜索内容存入历史记录

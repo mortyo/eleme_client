@@ -1,6 +1,5 @@
 <template>
     <div>
-    	<head-top></head-top>
 		<div class="address">
 			<p>当前地址：
 				<span class="msite_title">{{msiteTitle}} </span>
@@ -26,14 +25,12 @@
 </template>
 
 <script>
-import headTop from 'src/components/header/head'
 import shopList from 'src/components/common/shoplist'
 import {mapMutations} from 'vuex'
 import {msiteAddress, msiteFoodTypes} from 'src/service/getData'
 
 export default {
 	components: {
-    	headTop,
     	shopList,
     },
 	data(){

@@ -19,9 +19,6 @@
                 timer: null,
             }
         },
-        mounted(){
-      
-        },
         props: ['alertText'],
         methods: {
             closeTip(){

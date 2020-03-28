@@ -118,7 +118,9 @@
                 this.waitingThing();
                 this.$router.go(-1);
                 removeStore('user_id')
-                await signout();
+                await signout().then(()=>{
+                    window.location.reload()
+                });
             },
             async uploadAvatar(){
                 //上传头像

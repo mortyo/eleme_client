@@ -11,29 +11,24 @@
             <slot name="changecity"></slot>
             <slot name="changeLogin"></slot>
             <slot name="shop"></slot>
-            <!-- 显示返回 -->
-            <section class="head_goback" v-if="goBack" @click="$router.go(-1)">
-                <i class="el-icon-arrow-left">返回</i>
-            </section>
             <!-- 显示登录or个人中心 -->
-            <router-link :to="userInfo? '/profile':'/login'" v-if='signinUp' class="head_login">
-                <i class="el-icon-user" v-if="userInfo">个人中心</i>
+            <router-link :to="userInfo? '/profile':'/login'" class="head_login">
+                <el-avatar :src="imgBaseUrl + userInfo.avatar" v-if="userInfo"></el-avatar>
                 <span class="login_span" v-else>登录|注册</span>
             </router-link>
-            <!-- 显示地址 -->
-            <section class="title_head ellipsis" v-if="headTitle">
-                <span class="title_text">{{headTitle}}</span>
-            </section>
+            
         </el-menu>
     </header>
 </template>
 
 <script>
-    import {mapState, mapActions} from 'vuex'
+    import { mapState, mapActions } from 'vuex'
+    import { imgBaseUrl } from 'src/config/env'
     export default {
         data(){
             return{
                 activeIndex: '1',
+                imgBaseUrl
             }
         },
         props: ['signinUp', 'headTitle', 'goBack'], //来自于父组件的数据
@@ -82,9 +77,6 @@
         right: 0.55rem;
         @include sc(0.65rem, #fff); //字体大小，颜色
         @include ct;    //定位上下居中
-        .el-icon-user{
-            color: #fff;
-        }
         .login_span{
             color: #fff;
         }

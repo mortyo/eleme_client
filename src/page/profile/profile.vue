@@ -1,7 +1,5 @@
 <template>
     <div class="profile_page">
-        <head-top go-back='true' :head-title="profiletitle"></head-top>
-
         <section class="profile-number">
             <router-link :to="userInfo&&userInfo.user_id? '/profile/info' : '/login'" class="profile-link">
                 <img :src="imgBaseUrl + userInfo.avatar" class="privateImage" v-if="userInfo&&userInfo.user_id">
@@ -46,14 +44,13 @@
 </template>
 
 <script>
-import headTop from 'src/components/header/head'
 import {mapState, mapMutations} from 'vuex'
 import {imgBaseUrl} from 'src/config/env'
 import {getImgPath} from 'src/components/common/mixin'
 
 export default {
     components:{
-        headTop,
+        
     },
     mixins: [getImgPath],
     data(){

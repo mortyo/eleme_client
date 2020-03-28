@@ -1,5 +1,6 @@
 <template>
 	<div id="app">
+		<headtop></headtop>
 		<transition name="router-fade" mode="out-in">
 			<keep-alive>
 			    <router-view v-if="$route.meta.keepAlive"></router-view>
@@ -12,7 +13,10 @@
 </template>
 
 <script>
-
+import headtop from './components/header/head'
+export default {
+	components: { headtop },
+}	
 </script>
 
 <style lang="scss">
