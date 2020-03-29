@@ -21,6 +21,12 @@ export default {
 
 <style lang="scss">
 	@import './style/common';
+	#app {
+		font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+		font-size: 14px;
+		line-height: 1.5;
+    	color: #24292e;
+	}
 	.router-fade-enter-active, .router-fade-leave-active {
 	  	transition: opacity .3s;
 	}

@@ -84,6 +84,7 @@
             async initData(){
                 if (this.userInfo && this.userInfo.user_id) {
                     let res = await getOrderList(this.userInfo.user_id, this.offset);
+                    console.log(res.data)
                     this.orderList = [...res.data];
                     this.hideLoading();
                 }else{

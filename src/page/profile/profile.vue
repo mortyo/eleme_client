@@ -1,19 +1,60 @@
 <template>
     <div class="profile_page">
-        <section class="profile-number">
-            <router-link :to="userInfo&&userInfo.user_id? '/profile/info' : '/login'" class="profile-link">
-                <img :src="imgBaseUrl + userInfo.avatar" class="privateImage" v-if="userInfo&&userInfo.user_id">
-                <div class="user-info">
-                    <p>{{username}}</p>
-                    <p>
-                        <i class="el-icon-phone-outline"></i>
-                        <span class="icon-mobile-number">{{mobile}}</span>
-                    </p>
-                </div>
-            </router-link>
+        <section class="profile">
+            <div class="avatar">
+                <img :src="imgBaseUrl + userInfo.avatar" v-if="userInfo&&userInfo.user_id">
+            </div>
+            <div class="user-info">
+                <p>{{username}}</p>
+                <p>
+                    <i class="el-icon-phone-outline"></i>
+                    <span>{{mobile}}</span>
+                </p>
+                <p>
+                    <i class="el-icon-message"></i>
+                    <span>{{email}}</span>
+                </p>
+                <p>
+                    <i class="el-icon-location-information">{{city}}</i>
+                </p>
+                <p>
+                    <i class="el-icon-thumb">{{registe_time}}</i>
+                </p>
+            </div>
+            <router-link :to="userInfo&&userInfo.user_id? '/profile/info' : '/login'" class="profile-link">设置</router-link>
         </section>
         
         <section class="info-data">
+            <el-tabs type="border-card">
+                <el-tab-pane>
+                    <span slot="label"><i class="el-icon-shopping-cart-full"></i> 我的订单</span>
+                        <el-tabs v-model="activeName">
+                            <el-tab-pane label="所有订单" name="all">
+                                所有订单
+                            </el-tab-pane>
+                            <el-tab-pane label="配送中" name="sending">配送中</el-tab-pane>
+                            <el-tab-pane label="待支付" name="wait_to_pay">待支付</el-tab-pane>
+                            <el-tab-pane label="支付超时" name="timeout">支付超时</el-tab-pane>
+                        </el-tabs>
+                </el-tab-pane>
+                <el-tab-pane>
+                    <span slot="label"><i class="el-icon-wallet"></i> 我的钱包</span>
+                </el-tab-pane>
+                <el-tab-pane>
+                    <span slot="label"><i class="el-icon-present"></i> 我的优惠</span>
+                </el-tab-pane>
+                <el-tab-pane>
+                    <span slot="label"><i class="el-icon-trophy"></i> 我的积分</span>
+                </el-tab-pane>
+                <el-tab-pane>
+                    <span slot="label"><i class="el-icon-eleme"></i> Elemen小程序</span>
+                </el-tab-pane>
+                <el-tab-pane>
+                    <span slot="label"><i class="el-icon-more-outline"></i></span>
+                </el-tab-pane>
+            </el-tabs>
+
+
             <ul>
                 <router-link to="/balance" tag="li" class="info-data-link">
                     <span class="info-data-top"><b>{{parseInt(balance).toFixed(2)}}</b>元</span>
@@ -46,181 +87,158 @@
 <script>
 import {mapState, mapMutations} from 'vuex'
 import {imgBaseUrl} from 'src/config/env'
-import {getImgPath} from 'src/components/common/mixin'
+import {
+    getOrderList,
+} from 'src/service/getData'
 
 export default {
-    components:{
-        
-    },
-    mixins: [getImgPath],
     data(){
         return{
-            profiletitle: '我的',
-            username: '登录/注册',           //用户名
-            resetname: '',
+            username: '',           //用户名
+            avatar: '',             //头像地址
             mobile: '暂无绑定手机号',             //电话号码
+            email: '暂无绑定邮箱',             //电话号码
+            city: '',
+            registe_time: '',
             balance: 0,            //我的余额
             count : 0,             //优惠券个数
             pointNumber : 0,       //积分数
-            avatar: '',             //头像地址
             imgBaseUrl,
+            //订单数据
+            activeName: 'all',
+
         }
     },
     computed:{
         ...mapState([
             'userInfo',
         ]),
-        //后台会返回两种头像地址格式，分别处理
-        // imgpath:function () {
-        //     let path;
-        //     if(this.avatar.indexOf('/') !==-1){
-        //         path = imgBaseUrl +　this.avatar;
-        //     }else{
-        //         path = this.getImgPath(this.avatar)
-        //     }
-        //     this.SAVE_AVANDER(path);
-        //     return path;
-        // }
     },
     mounted(){
         this.initData();
+        this.initOrder()
     },
     methods:{
-        ...mapMutations([
-            'SAVE_AVANDER'
-        ]),
         initData(){
             if (this.userInfo && this.userInfo.user_id) {
                 this.avatar = this.userInfo.avatar;
                 this.username = this.userInfo.username;
                 this.mobile = this.userInfo.mobile || '暂无绑定手机号';
+                this.email = this.userInfo.email || '暂无绑定邮箱';
                 this.balance = this.userInfo.balance;
                 this.count = this.userInfo.gift_amount;
                 this.pointNumber = this.userInfo.point;
-            }else{
-                this.username = '登录/注册';
-                this.mobile = '暂无绑定手机号';
+                this.city = this.userInfo.city;
+                this.registe_time = this.userInfo.registe_time;
             }
         },
+        initOrder(){
+            if(this.userInfo && this.userInfo.user_id) {
+                getOrderList(this.userInfo.id).then((res) => {
+                    console.log(res.data)
+                })
+            }
+        }
     },
+    //监听userInfo数据变化是回调initData()函数初始化数据
     watch: {
         userInfo: function (value){
             this.initData()
         }
     }
 }
-
 </script>
 
 <style lang="scss" scoped>
    @import 'src/style/mixin';
 
     .profile_page{
-        p, span{
-            font-family: Helvetica Neue,Tahoma,Arial;
+        margin-top: 24px;
+        padding: 0 16px 0 16px;
+    }
+    .profile{
+        display: block;
+        float: left;
+        width: 20%;
+        padding-right: 16px;
+        .avatar {
+            overflow: hidden;
+            width: 100%;
+            img {
+                border-radius: 5px;
+                border: 1px solid #e1e4e8;
+                height: 100%;
+                width: 100%;
+            }
         }
-        .profile-number{
-            margin: 0 20%;
-            .profile-link{
-                display:block;
-                display:flex;
-                box-align: center;
-                -webkit-box-align: center;
-                -ms-flex-align: center;
-                align-items: center;
-                background:#545c64;
-                padding: .666667rem .6rem;
-                .privateImage{
+        .user-info{
+            padding: 16px 0;
+            p{
+                font-weight:600;
+                font-size: 16px;
+                line-height: 24px;
+                color: #666;
+                .icon-mobile-number{
                     display:inline-block;
-                    @include wh(2.5rem,2.5rem);
-                    border-radius:50%;
-                    vertical-align:middle;
-                    .privateImage-svg{
-                        background:$fc;
-                        border-radius:50%;
-                        @include wh(2.5rem,2.5rem);
-                    }
-                }
-                .user-info{
-                    margin-left:.48rem;
-                    -webkit-box-flex: 1;
-                    -ms-flex-positive: 1;
-                    flex-grow: 1;
-                    p{
-                        font-weight:700;
-                        @include sc(.8rem,$fc);
-                        .user-icon{
-                            @include wh(0.5rem,0.75rem);
-                            display:inline-block;
-                            vertical-align:middle;
-                            line-height:0.75rem;
-                            .icon-mobile{
-                                @include wh(100%,100%);
-                            }
-                        }
-                        .icon-mobile-number{
-                            display:inline-block;
-                            @include sc(.57333rem,$fc);
-
-                        }
-                    }
-
-                }
-                .arrow{
-                    @include wh(.46667rem,.98rem);
-                    display:inline-block;
-                    svg{
-                    @include wh(100%,100%);
-                    }
                 }
             }
         }
-        .info-data{
-            margin: 0 20%;
-            background:$fc;
-            box-sizing: border-box;
-            ul{
-                float: left;
-                .info-data-link{
-                    text-align:center;
-                    margin: 10px 0;
-                    border-right:1px solid #f1f1f1;
-                    span{
-                        display:block;
-                        width:100%;
-                    }
-                    .info-data-top{
-                        @include sc(.8rem,#333);
-                        padding: .853333rem 0 .453333rem;
-                        b{
-                            display:inline-block;
-                            @include sc(1.2rem,#f90);
-                            font-weight:700;
-                            line-height:1rem;
-                            font-family: Helvetica Neue,Tahoma;
-                        }
-                    }
-                    .info-data-bottom{
-                        @include sc(.9rem,#666);
-                        font-weight:400;
-                        padding-bottom:.453333rem;
-
+        .profile-link{
+            display:block;
+            text-align: center;
+            background:#545c64;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+        }
+    }
+    .info-data{
+        display: block;
+        float: left;
+        width: 80%;
+        background:$fc;
+        ul{
+            display: block;
+            float: left;
+            .info-data-link{
+                text-align:center;
+                margin: 10px 0;
+                border-right:1px solid #f1f1f1;
+                span{
+                    display:block;
+                    width:100%;
+                }
+                .info-data-top{
+                    @include sc(.8rem,#333);
+                    padding: .853333rem 0 .453333rem;
+                    b{
+                        display:inline-block;
+                        @include sc(1.2rem,#f90);
+                        font-weight:700;
+                        line-height:1rem;
+                        font-family: Helvetica Neue,Tahoma;
                     }
                 }
-                .info-data-link:nth-of-type(2){
-                    .info-data-top{
-                        b{
-                            color:#ff5f3e;
-                        }
-                    }
+                .info-data-bottom{
+                    @include sc(.9rem,#666);
+                    font-weight:400;
+                    padding-bottom:.453333rem;
 
                 }
-                .info-data-link:nth-of-type(3){
-                    border:0;
-                    .info-data-top{
-                        b{
-                            color:#6ac20b;
-                        }
+            }
+            .info-data-link:nth-of-type(2){
+                .info-data-top{
+                    b{
+                        color:#ff5f3e;
+                    }
+                }
+
+            }
+            .info-data-link:nth-of-type(3){
+                border:0;
+                .info-data-top{
+                    b{
+                        color:#6ac20b;
                     }
                 }
             }

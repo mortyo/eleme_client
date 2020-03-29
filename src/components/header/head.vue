@@ -16,7 +16,6 @@
                 <el-avatar :src="imgBaseUrl + userInfo.avatar" v-if="userInfo"></el-avatar>
                 <span class="login_span" v-else>登录|注册</span>
             </router-link>
-            
         </el-menu>
     </header>
 </template>

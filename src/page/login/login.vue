@@ -16,19 +16,14 @@
         <p class="login_tips">
             Tip：未注册过的账号，登录时将自动注册，注册过的用户可凭账号密码登录
         </p>
-        <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="closeTip" :alertText="alertText"></alert-tip>
     </div>
 </template>
 
 <script>
-    import alertTip from '../../components/common/alertTip'
     import { mapMutations } from 'vuex'
     import { getcaptchas, accountLogin } from '../../service/getData'
 
     export default {
-        components: {
-            alertTip
-        },
         data(){
             return {
                 userInfo: null, //获取到的用户信息
@@ -36,8 +31,6 @@
                 passWord: null, //密码
                 captchaCodeImg: null, //验证码地址
                 codeNumber: null, //验证码
-                showAlert: false, //显示提示组件
-                alertText: null, //提示的内容
             }
         },
         created(){
@@ -54,48 +47,57 @@
             },
             //发送登录信息
             async Login(){
-                this.$message('这是一条消息提示');
                 if (!this.userAccount) {
-                    this.showAlert = true;
-                    this.alertText = '请输入用户名';
+                    //element 消息提示
+                    this.$message({
+                        type: 'warning',
+                        showClose: true,
+                        message: '请输入：用户名 👇👇👇'
+                    });
                     return  //重新开始
                 }else if(!this.passWord){
-                    this.showAlert = true;
-                    this.alertText = '请输入密码';
+                    this.$message({
+                        type: 'warning',
+                        showClose: true,
+                        message: '请输入：密码 👇👇👇'
+                    });
                     return
                 }else if(!this.codeNumber){
-                    this.showAlert = true;
-                    this.alertText = '请输入验证码';
+                    this.$message({
+                        type: 'warning',
+                        showClose: true,
+                        message: '请输入：验证码 👇👇👇'
+                    });
                     return
                 }
                 //用户名登录
                 let res = await accountLogin(this.userAccount, this.passWord, this.codeNumber);
                 this.userInfo = res.data
                 console.log(res.data)
-                
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
                 if (!this.userInfo.user_id) {
-                    this.showAlert = true;
-                    this.alertText = this.userInfo.message;
+                    this.$message({
+                        type: 'error',
+                        showClose: true,
+                        message: this.userInfo.message
+                    });
                     this.getCaptchaCode();
                 }else{
+                    this.$message({
+                        type: 'success',
+                        showClose: true,
+                        message: '密码正确，登录成功！',
+                    });
                     this.RECORD_USERINFO(this.userInfo);
                     this.$router.go(-1);
                 }
             },
-            closeTip(){
-                this.showAlert = false;
-            }
         }
     }
-
 </script>
 
 <style lang="scss" scoped>
     @import '../../style/mixin';
-    .container{
-        // text-align: center;
-    }
     .loginForm{
         background-color: #fff;
         width: 300px;
@@ -140,5 +142,6 @@
     }
     .login_tips{
         text-align: center;
+        color: #E6A23C;
     }
 </style>
