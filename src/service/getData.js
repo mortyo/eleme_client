@@ -442,3 +442,12 @@ export const signout = () => axios.get('/v2/signout');
  * 39-改密码
  */
 export const changePassword = (username, oldpassWord, newpassword, confirmpassword, captcha_code) => fetch('/v2/changepassword', {username, oldpassWord, newpassword, confirmpassword, captcha_code}, 'POST');
+
+/**
+ *40-改头像
+ */
+export const changeAvatar = (user_id,data) => fetch('/eus/v1/users/'+user_id+'/avatar',{
+	method: 'POST',
+    credentials: 'include',
+    body: data
+})

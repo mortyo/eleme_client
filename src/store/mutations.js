@@ -147,6 +147,7 @@ export default {
 	},
 	//修改用户名
 	[RETSET_NAME](state,username) {
+		//从后面合起来，也就是从{username}开始
 		state.userInfo = Object.assign({}, state.userInfo,{username})
 	},
 	//保存商铺id

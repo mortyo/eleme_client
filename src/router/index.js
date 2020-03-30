@@ -27,7 +27,6 @@ const login = r => require.ensure([], () => r(require('../page/login/login')), '
 const profile = r => require.ensure([], () => r(require('../page/profile/profile')), 'profile')
 const forget = r => require.ensure([], () => r(require('../page/forget/forget')), 'forget')
 const info = r => require.ensure([], () => r(require('../page/profile/children/info')), 'info')
-const setusername = r => require.ensure([], () => r(require('../page/profile/children/children/setusername')), 'setusername')
 const address = r => require.ensure([], () => r(require('../page/profile/children/children/address')), 'address')
 const add = r => require.ensure([], () => r(require('../page/profile/children/children/children/add')), 'add')
 const addDetail = r => require.ensure([], () => r(require('../page/profile/children/children/children/children/addDetail')), 'addDetail')
@@ -124,9 +123,6 @@ const routes = [
             path: 'info', //个人信息详情页
             component: info,
             children: [{
-                path: 'setusername',
-                component: setusername,
-            },{
                 path: 'address',
                 component: address,     //编辑地址
                 children:[{

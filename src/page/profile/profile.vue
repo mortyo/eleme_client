@@ -1,6 +1,6 @@
 <template>
     <div class="profile_page">
-        <section class="profile">
+        <div class="profile">
             <div class="avatar">
                 <img :src="imgBaseUrl + userInfo.avatar" v-if="userInfo&&userInfo.user_id">
             </div>
@@ -22,9 +22,8 @@
                 </p>
             </div>
             <router-link :to="userInfo&&userInfo.user_id? '/profile/info' : '/login'" class="profile-link">设置</router-link>
-        </section>
-        
-        <section class="info-data">
+        </div>
+        <div class="info-data">
             <el-tabs type="border-card">
                 <!-- 订单 -->
                 <el-tab-pane class="order">
@@ -63,7 +62,7 @@
                 </el-tab-pane>
                 <!-- 余额 -->
                 <el-tab-pane class="balance">
-                    <span slot="label"><i class="el-icon-wallet"></i>我的钱包</span>
+                    <span slot="label"><i class="el-icon-wallet"></i> 我的钱包</span>
                     <div class="cash">
                         <p>当前余额：<span>{{balance}}</span>元</p>
                         <el-button type="primary" class="Take_out">提现</el-button>
@@ -75,7 +74,7 @@
                 </el-tab-pane>
                 <!-- 红包 -->
                 <el-tab-pane>
-                    <span slot="label"><i class="el-icon-present"></i>我的优惠</span>
+                    <span slot="label"><i class="el-icon-present"></i> 我的优惠</span>
                         <el-tabs v-model="activeName_hongbao">
                             <el-tab-pane label="红包" name="hongbao">
                                 <p>当前可用红包：{{hongbaoList.length}}个</p>
@@ -109,14 +108,14 @@
                 </el-tab-pane>
                 <!-- 积分 -->
                 <el-tab-pane>
-                    <span slot="label"><i class="el-icon-trophy"></i>我的积分</span>
+                    <span slot="label"><i class="el-icon-trophy"></i> 我的积分</span>
                     <p>当前积分：{{pointNumber}}分</p>
                     <p>积分记录</p>
                     <p>没有任何积分记录哦</p>
                 </el-tab-pane>
                 <!-- 下载 -->
                 <el-tab-pane>
-                    <span slot="label"><i class="el-icon-eleme"></i>Eleme小程序</span>
+                    <span slot="label"><i class="el-icon-eleme"></i> Eleme小程序</span>
                     <img src='../../images/app.png'>
                     <p>手机用户请扫码下载APP</p>
                 </el-tab-pane>
@@ -125,8 +124,8 @@
                     <span slot="label"><i class="el-icon-more-outline"></i></span>
                 </el-tab-pane>
             </el-tabs>
-        </section>
-        <transition name="router-slid" mode="out-in">
+        </div>
+        <transition name="el-fade-in-linear">
             <router-view></router-view>
         </transition>
     </div>
@@ -205,136 +204,130 @@ export default {
 
 <style lang="scss" scoped>
    @import 'src/style/mixin';
-
     .profile_page{
-        margin-top: 24px;
-        padding: 0 16px 0 16px;
-    }
-    .profile{
-        display: block;
-        float: left;
-        width: 20%;
-        padding-right: 16px;
-        .avatar {
-            overflow: hidden;
-            width: 100%;
-            img {
-                border-radius: 5px;
-                border: 1px solid #e1e4e8;
-                height: 100%;
-                width: 100%;
-            }
-        }
-        .user-info{
-            padding: 16px 0;
-            p{
-                font-weight:600;
-                font-size: 16px;
-                line-height: 24px;
-                color: #666;
-                .icon-mobile-number{
-                    display:inline-block;
-                }
-            }
-        }
-        .profile-link{
-            display:block;
-            text-align: center;
-            background:#545c64;
-            color: #fff;
-            padding: 8px;
-            border-radius: 5px;
-        }
-    }
-    .info-data{
-        display: block;
-        float: left;
-        width: 80%;
-        background:$fc;
-        .allorder {
-            .order_head {
-                border: 1px solid #ececec;
-                width: 100%;
-                li {
-                    float: left;
-                    // display: block;
-                    // #name { width: 50%; };
-                    // #total {};
-                    // #stat {};
-                    // #operate{}
-                }
-            }
-            .order_data {
-                width: 100%;
-                li {
-                    border: 1px solid #ececec;
-                    margin: 3px;
-                }
-            }
-        }
-        // .balance {
-        //     .cash{
-        //         .take_out{
-
-        //         }
-        //     }
-        // }
-
-
-
-
-        ul{
+        margin: 24px auto 0 auto;
+        padding: 0 16px;
+        max-width: 1000px;
+        height: 1157px;
+        .profile{
             display: block;
             float: left;
-            .info-data-link{
-                text-align:center;
-                margin: 10px 0;
-                border-right:1px solid #f1f1f1;
-                span{
-                    display:block;
-                    width:100%;
+            width: 20%;
+            padding-right: 16px;
+            .avatar {
+                overflow: hidden;
+                width: 100%;
+                img {
+                    border-radius: 5px;
+                    border: 1px solid #e1e4e8;
+                    height: 100%;
+                    width: 100%;
                 }
-                .info-data-top{
-                    @include sc(.8rem,#333);
-                    padding: .853333rem 0 .453333rem;
-                    b{
+            }
+            .user-info{
+                padding: 16px 0;
+                p{
+                    font-weight:600;
+                    font-size: 16px;
+                    line-height: 24px;
+                    color: #666;
+                    .icon-mobile-number{
                         display:inline-block;
-                        @include sc(1.2rem,#f90);
-                        font-weight:700;
-                        line-height:1rem;
-                        font-family: Helvetica Neue,Tahoma;
                     }
                 }
-                .info-data-bottom{
-                    @include sc(.9rem,#666);
-                    font-weight:400;
-                    padding-bottom:.453333rem;
-
-                }
             }
-            .info-data-link:nth-of-type(2){
-                .info-data-top{
-                    b{
-                        color:#ff5f3e;
+            .profile-link{
+                display:block;
+                text-align: center;
+                background:#545c64;
+                color: #fff;
+                padding: 8px;
+                border-radius: 5px;
+            }
+        }
+        .info-data{
+            display: block;
+            float: left;
+            width: 80%;
+            background:$fc;
+            .allorder {
+                .order_head {
+                    border: 1px solid #ececec;
+                    width: 100%;
+                    li {
+                        float: left;
+                        // display: block;
+                        // #name { width: 50%; };
+                        // #total {};
+                        // #stat {};
+                        // #operate{}
                     }
                 }
-
+                .order_data {
+                    width: 100%;
+                    li {
+                        border: 1px solid #ececec;
+                        margin: 3px;
+                    }
+                }
             }
-            .info-data-link:nth-of-type(3){
-                border:0;
-                .info-data-top{
-                    b{
-                        color:#6ac20b;
+            // .balance {
+            //     .cash{
+            //         .take_out{
+
+            //         }
+            //     }
+            // }
+
+
+
+
+            ul{
+                display: block;
+                float: left;
+                .info-data-link{
+                    text-align:center;
+                    margin: 10px 0;
+                    border-right:1px solid #f1f1f1;
+                    span{
+                        display:block;
+                        width:100%;
+                    }
+                    .info-data-top{
+                        @include sc(.8rem,#333);
+                        padding: .853333rem 0 .453333rem;
+                        b{
+                            display:inline-block;
+                            @include sc(1.2rem,#f90);
+                            font-weight:700;
+                            line-height:1rem;
+                            font-family: Helvetica Neue,Tahoma;
+                        }
+                    }
+                    .info-data-bottom{
+                        @include sc(.9rem,#666);
+                        font-weight:400;
+                        padding-bottom:.453333rem;
+
+                    }
+                }
+                .info-data-link:nth-of-type(2){
+                    .info-data-top{
+                        b{
+                            color:#ff5f3e;
+                        }
+                    }
+
+                }
+                .info-data-link:nth-of-type(3){
+                    border:0;
+                    .info-data-top{
+                        b{
+                            color:#6ac20b;
+                        }
                     }
                 }
             }
         }
-    }
-    .router-slid-enter-active, .router-slid-leave-active {
-        transition: all .4s;
-    }
-    .router-slid-enter, .router-slid-leave-active {
-        transform: translate3d(2rem, 0, 0);
-        opacity: 0;
     }
 </style>

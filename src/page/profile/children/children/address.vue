@@ -6,7 +6,7 @@
 			<el-button size="mini" round type="primary" icon="el-icon-edit" @click="editThing">{{editText}}</el-button>
 			
         	<ul class="addresslist">
-        		<li v-for="(item,index) in removeAddress">
+        		<!-- <li v-for="(item,index) in removeAddress" v-bind="item.index">
         			<div>
         				<p>{{item.address}}</p>
         				<p><span>{{item.phone}}</span><span v-if="item.phonepk">{{item.phonepk}}</span></p>
@@ -14,7 +14,7 @@
         			<div class="deletesite" v-if="deletesite">
         				<span @click="deleteSite(index, item)">x</span>
         			</div>
-        		</li>
+        		</li> -->
         	</ul>
 			<router-link to='/profile/info/address/add'>
 				<div class="addsite">

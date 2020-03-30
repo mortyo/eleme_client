@@ -1,20 +1,32 @@
  <template>
     <div class="rating_page">
         <head-top head-title="账户信息" go-back='true'></head-top>
+
+        <el-tabs class="tabs" type="border-card" tab-position="left">
+            <el-tab-pane>
+                <span slot="label"><i class="el-icon-user"></i> 用户信息</span>
+                <p>当前用户名：{{username}}</p>
+                <el-input v-model="resetname" placeholder="请输入新的用户名" clearable style="width:200px"></el-input>
+                <el-button type="primary" @click="resetName3()">确认修改</el-button>
+            </el-tab-pane>
+            <el-tab-pane class="avatar">
+                <span slot="label"><i class="el-icon-s-custom"></i> 头像修改</span>
+                <img :src="imgBaseUrl + userInfo.avatar" style="width:180px;height:180px;">
+                <input type="file" class="profileinfopanel-upload" style="display: block">
+                <el-button type="primary" @click="uploadAvatar()">确认上传</el-button>
+            </el-tab-pane>
+            <el-tab-pane>
+                <span slot="label"><i class="el-icon-map-location"></i> 收货地址</span>
+            </el-tab-pane>
+            <el-tab-pane>
+                <span slot="label"><i class="el-icon-unlock"></i> 修改密码</span>
+            </el-tab-pane>
+        </el-tabs>
+
+
+
         <!-- 主要信息 -->
         <section class="profile-info">
-            <section class="headportrait">
-                <input type="file" class="profileinfopanel-upload" @change="uploadAvatar">
-                <el-avatar v-if="userInfo" :src="imgBaseUrl + userInfo.avatar" shape="square"></el-avatar>
-            </section>
-            
-            <router-link to="/profile/info/setusername" class="info-router">
-                <section class="headportrait">
-                    <h4>用户名</h4>
-                    <p>{{username}}</p>
-                </section>
-            </router-link>
-
             <router-link to="/profile/info/address" class="info-router">
                 <section class="headportrait">
                     <h4>收货地址</h4>
@@ -62,7 +74,11 @@
     import alertTip from 'src/components/common/alertTip'
 
     import {mapMutations, mapState} from 'vuex'
-    import {signout} from 'src/service/getData'
+    import { 
+        signout,
+        changeAvatar
+    } from 'src/service/getData'
+    import axios from 'axios'
     import {imgBaseUrl} from 'src/config/env'
     import {removeStore} from 'src/config/mUtils'
 
@@ -82,6 +98,7 @@
                 showAlert: false,
                 alertText: null,
                 imgBaseUrl,
+                imageUrl: ''
             }
         },
         computed:{
@@ -96,7 +113,13 @@
             ...mapMutations([
                 'OUT_LOGIN', 'SAVE_AVANDER'
             ]),
-
+            resetName3(){
+                this.$message({
+                    showClose: true,
+                    message: '没有修改用户名这个接口，等我后面写服务器的时候再加，嘻嘻',
+                    type: 'success'
+                });
+            },
             exitlogin(){
                 this.show=true;
                 this.isEnter=true;
@@ -129,18 +152,16 @@
                     let data = new FormData();
                     data.append('file', input.files[0]);
                     try{
-                        let response = await fetch('/eus/v1/users/' + this.userInfo.user_id + '/avatar', {
-                              method: 'POST',
-                              credentials: 'include',
-                              body: data
-                            })
+                        //上传到服务器
+                        let response = await changeAvatar(this.userInfo.user_id,data)
+                        //解析响应成json格式
                         let res = await response.json();
+                        console.log(res)
                         if (res.status == 1) {
                             this.userInfo.avatar = res.image_path;
                         }
                     }catch (error) {
-                        this.showAlert = true;
-                        this.alertText = '上传失败';
+                        this.$message.error('上传失败，请重新上传');
                         throw new Error(error);
                     }
                 }
@@ -168,8 +189,13 @@
         bottom: 0;
         background-color: #f2f2f2;
         z-index: 202;
-        p, span{
-            font-family: Helvetica Neue,Tahoma,Arial;
+        .tabs {
+            margin: 24px auto 0 auto;
+            max-width: 980px;
+            height: 600px;
+            .avatar {
+
+            }
         }
     }
     .profile-info{
