@@ -26,57 +26,105 @@
         
         <section class="info-data">
             <el-tabs type="border-card">
-                <el-tab-pane>
+                <!-- 订单 -->
+                <el-tab-pane class="order">
                     <span slot="label"><i class="el-icon-shopping-cart-full"></i> 我的订单</span>
                         <el-tabs v-model="activeName">
-                            <el-tab-pane label="所有订单" name="all">
-                                所有订单
+                            <el-tab-pane class="allorder" label="全部订单" name="all">
+                                    <ul class="order_head">
+                                        <li id="name">商品</li>
+                                        <li id="total">实付款</li>
+                                        <li id="stat">交易状态</li>
+                                        <li id="operate">交易操作</li>
+                                    </ul>
+                                    <ul class="order_data">
+                                        <li v-for="item in orderlist" :key="item.key">
+                                            <div>
+                                                {{item.formatted_created_at}} 
+                                                <img alt="商家图片"> 
+                                                {{item.restaurant_name}}
+                                                订单详情
+                                            </div>
+                                            <div>
+                                                <img alt="商品图片"> 
+                                                {{item.basket.group[0][0].name}}{{item.basket.group[0].length > 1 ? ' 等' + item.basket.group[0].length + '件商品' : ''}}
+                                                ¥{{item.total_amount.toFixed(2)}}
+                                                {{item.status_bar.title}}
+                                                <div style="display:inline" v-if="item.status_bar.title == '等待支付'">去支付(time)</div>
+                                                <div style="display:inline" v-else>重新下单</div>
+                                            </div>
+                                        </li>
+                                    </ul>
                             </el-tab-pane>
-                            <el-tab-pane label="配送中" name="sending">配送中</el-tab-pane>
-                            <el-tab-pane label="待支付" name="wait_to_pay">待支付</el-tab-pane>
+                            <el-tab-pane label="支付成功" name="sending">支付成功</el-tab-pane>
+                            <el-tab-pane label="等待支付" name="wait_to_pay">等待支付</el-tab-pane>
                             <el-tab-pane label="支付超时" name="timeout">支付超时</el-tab-pane>
                         </el-tabs>
                 </el-tab-pane>
-                <el-tab-pane>
-                    <span slot="label"><i class="el-icon-wallet"></i> 我的钱包</span>
+                <!-- 余额 -->
+                <el-tab-pane class="balance">
+                    <span slot="label"><i class="el-icon-wallet"></i>我的钱包</span>
+                    <div class="cash">
+                        <p>当前余额：<span>{{balance}}</span>元</p>
+                        <el-button type="primary" class="Take_out">提现</el-button>
+                    </div>
+                    <div class="record">
+                        <p>交易记录</p>
+                        <p>没有任何交易记录哦</p>
+                    </div>
                 </el-tab-pane>
+                <!-- 红包 -->
                 <el-tab-pane>
-                    <span slot="label"><i class="el-icon-present"></i> 我的优惠</span>
+                    <span slot="label"><i class="el-icon-present"></i>我的优惠</span>
+                        <el-tabs v-model="activeName_hongbao">
+                            <el-tab-pane label="红包" name="hongbao">
+                                <p>当前可用红包：{{hongbaoList.length}}个</p>
+                                <ul>
+                                    <li v-for="item in hongbaoList" :key="item.id">
+                                        <section class="list_item">
+                                            <div class="list_item_left">
+                                                <span>¥</span>
+                                                <span>{{String(item.amount).split('.')[0]}}</span>
+                                                <span>.</span>
+                                                <span>{{String(item.amount).split('.')[1]||0}}</span>
+                                                <p>{{item.description_map.sum_condition}}</p>
+                                            </div>
+                                            <div class="list_item_right">
+                                                <h4>{{item.name}}</h4>
+                                                <p>{{item.description_map.validity_periods}}</p>
+                                                <p>{{item.description_map.phone}}</p>
+                                            </div>
+                                            <div class="time_left">{{item.description_map.validity_delta}}</div>
+                                        </section>
+                                        <footer class="list_item_footer" v-if="item.limit_map">
+                                            <p>{{item.limit_map.restaurant_flavor_ids}}</p>
+                                        </footer>
+                                    </li>
+                                </ul>
+                            </el-tab-pane>
+                            <el-tab-pane label="代金券" name="daijinquan">
+                                <p>没有任何代金券哦</p>
+                            </el-tab-pane>
+                        </el-tabs>
                 </el-tab-pane>
+                <!-- 积分 -->
                 <el-tab-pane>
-                    <span slot="label"><i class="el-icon-trophy"></i> 我的积分</span>
+                    <span slot="label"><i class="el-icon-trophy"></i>我的积分</span>
+                    <p>当前积分：{{pointNumber}}分</p>
+                    <p>积分记录</p>
+                    <p>没有任何积分记录哦</p>
                 </el-tab-pane>
+                <!-- 下载 -->
                 <el-tab-pane>
-                    <span slot="label"><i class="el-icon-eleme"></i> Elemen小程序</span>
+                    <span slot="label"><i class="el-icon-eleme"></i>Eleme小程序</span>
+                    <img src='../../images/app.png'>
+                    <p>手机用户请扫码下载APP</p>
                 </el-tab-pane>
+                <!-- 更多 -->
                 <el-tab-pane>
                     <span slot="label"><i class="el-icon-more-outline"></i></span>
                 </el-tab-pane>
             </el-tabs>
-
-
-            <ul>
-                <router-link to="/balance" tag="li" class="info-data-link">
-                    <span class="info-data-top"><b>{{parseInt(balance).toFixed(2)}}</b>元</span>
-                    <span class="info-data-bottom">我的余额</span>
-                </router-link>
-                <router-link to="/benefit" tag="li" class="info-data-link">
-                    <span class="info-data-top"><b>{{count}}</b>个</span>
-                    <span class="info-data-bottom">我的优惠</span>
-                </router-link>
-                <router-link to="/points" tag="li" class="info-data-link">
-                    <span class="info-data-top"><b>{{pointNumber}}</b>分</span>
-                    <span class="info-data-bottom">我的积分</span>
-                </router-link>
-                <router-link to='/order' tag="li" class="info-data-link">
-                    <i class="el-icon-chicken"></i>
-                    <span class="info-data-bottom">我的订单</span>
-                </router-link>
-                <router-link to='/download' tag="li" class="info-data-link">
-                    <i class="el-icon-eleme"></i>
-                    <span class="info-data-bottom">下载APP</span>
-                </router-link>
-            </ul>
         </section>
         <transition name="router-slid" mode="out-in">
             <router-view></router-view>
@@ -89,6 +137,7 @@ import {mapState, mapMutations} from 'vuex'
 import {imgBaseUrl} from 'src/config/env'
 import {
     getOrderList,
+    getHongbaoNum
 } from 'src/service/getData'
 
 export default {
@@ -106,7 +155,10 @@ export default {
             imgBaseUrl,
             //订单数据
             activeName: 'all',
-
+            orderlist: [],
+            //红包
+            activeName_hongbao: 'hongbao',
+            hongbaoList: []
         }
     },
     computed:{
@@ -116,7 +168,6 @@ export default {
     },
     mounted(){
         this.initData();
-        this.initOrder()
     },
     methods:{
         initData(){
@@ -130,15 +181,18 @@ export default {
                 this.pointNumber = this.userInfo.point;
                 this.city = this.userInfo.city;
                 this.registe_time = this.userInfo.registe_time;
-            }
-        },
-        initOrder(){
-            if(this.userInfo && this.userInfo.user_id) {
+                //获取订单数据
                 getOrderList(this.userInfo.id).then((res) => {
+                    this.orderlist = res.data
+                    // console.log(this.orderlist)
+                //获取红包数据
+                getHongbaoNum(this.userInfo.user_id).then((res) => {
+                    this.hongbaoList = res.data
                     console.log(res.data)
+                });
                 })
             }
-        }
+        },
     },
     //监听userInfo数据变化是回调initData()函数初始化数据
     watch: {
@@ -197,6 +251,38 @@ export default {
         float: left;
         width: 80%;
         background:$fc;
+        .allorder {
+            .order_head {
+                border: 1px solid #ececec;
+                width: 100%;
+                li {
+                    float: left;
+                    // display: block;
+                    // #name { width: 50%; };
+                    // #total {};
+                    // #stat {};
+                    // #operate{}
+                }
+            }
+            .order_data {
+                width: 100%;
+                li {
+                    border: 1px solid #ececec;
+                    margin: 3px;
+                }
+            }
+        }
+        // .balance {
+        //     .cash{
+        //         .take_out{
+
+        //         }
+        //     }
+        // }
+
+
+
+
         ul{
             display: block;
             float: left;

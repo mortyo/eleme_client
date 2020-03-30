@@ -164,6 +164,7 @@
             async initData(){
                 if (this.userInfo) {
                     let res_hongbaoList = await getHongbaoNum(this.userInfo.user_id);
+                    console.log(res_hongbaoList)
                     this.hongbaoList = res_hongbaoList.data;
                     this.showLoading = false;
                 }

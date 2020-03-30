@@ -384,7 +384,7 @@ export const getUser = () => axios.get('/v1/user', {
 
 export const getOrderList = (user_id, offset) => axios.get('/bos/v2/users/' + user_id + '/orders', {
 	params: {
-		limit: 10,
+		limit: 5,
 		offset:offset,
 	}
 });
