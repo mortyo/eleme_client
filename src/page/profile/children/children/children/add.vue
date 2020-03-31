@@ -76,7 +76,7 @@
         },
         computed:{
              ...mapState([
-                'userInfo', 'addAddress','removeAddress','newAddress', 'geohash'
+                'userInfo', 'addAddress','state_Address','newAddress', 'geohash'
             ]),
             
         },

@@ -16,15 +16,13 @@ export default {
 		let res = await getUser();
 		commit(GET_USERINFO, res.data)
 	},
-	//保存地址
+	//根据state里的userInfo.user_id保存地址
 	async saveAddress({
 		commit,
 		state
 	}) {
-
-		if(state.removeAddress.length > 0) return;
-
-		let addres = await getAddressList(state.userInfo.user_id);
-		commit(SAVE_ADDRESS, addres);	
+		if(state.state_Address.length > 0) return;
+		let address = await getAddressList(state.userInfo.user_id);
+		commit(SAVE_ADDRESS, address);	
 	},
 }

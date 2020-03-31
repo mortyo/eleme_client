@@ -6,7 +6,7 @@
 			<el-button size="mini" round type="primary" icon="el-icon-edit" @click="editThing">{{editText}}</el-button>
 			
         	<ul class="addresslist">
-        		<!-- <li v-for="(item,index) in removeAddress" v-bind="item.index">
+        		<li v-for="(item,index) in adressList" :key="index">
         			<div>
         				<p>{{item.address}}</p>
         				<p><span>{{item.phone}}</span><span v-if="item.phonepk">{{item.phonepk}}</span></p>
@@ -14,7 +14,7 @@
         			<div class="deletesite" v-if="deletesite">
         				<span @click="deleteSite(index, item)">x</span>
         			</div>
-        		</li> -->
+        		</li>
         	</ul>
 			<router-link to='/profile/info/address/add'>
 				<div class="addsite">
@@ -48,12 +48,11 @@
 		},
 		computed:{
              ...mapState([
-                'userInfo','removeAddress'
-            ]),
-             
-        },
-        mounted(){
-            this.initData();
+                'userInfo','state_Address'
+            ]),  
+		},
+		mounted(){
+			this.initData();
         },
         methods: {
         	...mapActions([
@@ -62,7 +61,8 @@
             //初始化信息
             initData(){
                 if (this.userInfo && this.userInfo.user_id) {
-                   this.saveAddress();
+				   this.saveAddress();
+				   this.adressList = this.state_Address.data
                 }
             },
             //编辑
@@ -79,7 +79,7 @@
             async deleteSite(index, item){
                 if (this.userInfo && this.userInfo.user_id) {
                     await deleteAddress(this.userInfo.user_id, item.id);
-            	    this.removeAddress.splice(index, 1);
+            	    this.state_Address.splice(index, 1);
                 }
             }
         },

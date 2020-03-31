@@ -214,11 +214,11 @@ export const getRemark = (id, sig) => axios.get('/v1/carts/' + id + '/remarks', 
  * 19-获取地址列表
  */
 
-// export const getAddress = (id, sig) => axios.get('/v1/carts/' + id + '/addresses', {
-// 	params: {
-// 		sig
-// 	}
-// });
+export const getAddress = (id, sig) => axios.get('/v1/carts/' + id + '/addresses', {
+	params: {
+		sig
+	}
+});
 
 
 /**

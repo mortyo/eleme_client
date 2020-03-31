@@ -5,6 +5,18 @@
             <el-menu-item index="搜索" @click = "gotoAddress({path: `/search/${geohash}`})" class="guide_item">搜索</el-menu-item>
             <el-menu-item index="订单" @click = "gotoAddress('/order')" class="guide_item">订单</el-menu-item>
             <el-menu-item index="我的" @click = "gotoAddress('/profile')" class="guide_item">我的</el-menu-item>
+            <el-submenu index="profile" style="float:right" v-if="userInfo">
+                <template slot="title"><el-avatar :src="imgBaseUrl + userInfo.avatar"></el-avatar></template>
+                <el-menu-item index="2-1" @click = "gotoAddress('/profile')">个人中心</el-menu-item>
+                <el-menu-item index="2-2" @click = "gotoAddress('/profile/info')">账号设置</el-menu-item>
+                <el-menu-item index="2-3" @click="showDialog()">退出</el-menu-item>
+            </el-submenu>
+            <el-menu-item index="login" style="float:right" v-else>
+                <router-link :to="'/login'">
+                    <span class="title_head">登录|注册</span>
+                </router-link>
+            </el-menu-item>
+            
             <!-- 所有插槽 -->
             <slot name='search'></slot>
             <slot name="edit"></slot>
@@ -12,22 +24,30 @@
             <slot name="changeLogin"></slot>
             <slot name="shop"></slot>
             <!-- 显示登录or个人中心 -->
-            <router-link :to="userInfo? '/profile':'/login'" class="head_login">
-                <el-avatar :src="imgBaseUrl + userInfo.avatar" v-if="userInfo"></el-avatar>
-                <span class="login_span" v-else>登录|注册</span>
-            </router-link>
         </el-menu>
+        <!-- 退出登录提示框 -->
+        <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+            <span>确定退出吗？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="centerDialogVisible = false;logout();" round>确 定</el-button>
+                <el-button @click="centerDialogVisible = false" round>取 消</el-button>
+            </span>
+        </el-dialog>
     </header>
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex'
+    import { mapState, mapActions,mapMutations} from 'vuex'
     import { imgBaseUrl } from 'src/config/env'
+    import { removeStore } from 'src/config/mUtils'
+    import { signout } from 'src/service/getData.js'
+
     export default {
         data(){
             return{
                 activeIndex: '1',
-                imgBaseUrl
+                imgBaseUrl,
+                centerDialogVisible: false
             }
         },
         props: ['signinUp', 'headTitle', 'goBack'], //来自于父组件的数据
@@ -42,6 +62,9 @@
             ]),
         },
         methods: {
+            ...mapMutations([
+                'OUT_LOGIN'
+            ]),
             ...mapActions([
                 'getUserInfo'
             ]),
@@ -50,6 +73,16 @@
             },
             handleSelect(key, keyPath) {
                 console.log(key, keyPath);
+            },
+            showDialog(){
+                this.centerDialogVisible = true;
+            },
+            async logout(){
+                this.OUT_LOGIN();
+                removeStore('user_id')
+                await signout().then(()=>{
+                    window.location.reload()
+                });
             }
         },
 
@@ -65,12 +98,6 @@
         left: 0;
         top: 0;
         @include wh(100%, 60px);  //宽高
-    }
-    .head_goback{
-        left: 0.4rem;
-        @include wh(60px, 60px);
-        line-height: 2.2rem;
-        margin-left: .4rem;
     }
     .head_login{
         right: 0.55rem;

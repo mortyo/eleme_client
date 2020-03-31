@@ -223,7 +223,7 @@ export default {
 
 	//删除地址列表，在action中被提交
 	[SAVE_ADDRESS](state, newAdress) {
-		state.removeAddress = newAdress
+		state.state_Address = newAdress
 	},
 	//添加地址name
 	[SAVE_ADDDETAIL](state, addAddress){
@@ -235,7 +235,7 @@ export default {
 	},
 	//增加地址
 	[ADD_ADDRESS](state, obj) {
-		state.removeAddress = [obj, ...state.removeAddress];
+		state.state_Address = [obj, ...state.state_Address];
 	},
 	//会员卡价格纪录
 	[BUY_CART](state, price) {

@@ -9,7 +9,7 @@
                 <el-input v-model="resetname" placeholder="请输入新的用户名" clearable style="width:200px"></el-input>
                 <el-button type="primary" @click="resetName3()">确认修改</el-button>
             </el-tab-pane>
-            <el-tab-pane class="avatar">
+            <el-tab-pane>
                 <span slot="label"><i class="el-icon-s-custom"></i> 头像修改</span>
                 <img :src="imgBaseUrl + userInfo.avatar" style="width:180px;height:180px;">
                 <input type="file" class="profileinfopanel-upload" style="display: block">
@@ -17,9 +17,26 @@
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-map-location"></i> 收货地址</span>
+                <ul>
+                    <li v-for="item in addressList" :key="item.id" style="border: 1px solid black;margin: 2px 0">
+                        <p>地址：{{item.address}}</p>
+                        <p>详细地址：{{item.address_detail}}</p>
+                        <p>电话：{{item.phone}}</p>
+                        <p>tag:{{item.tag}}</p>
+                        <p>创建时间：{{item.created_at}}</p>
+                    </li>
+                </ul>
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-unlock"></i> 修改密码</span>
+                <p v-if="username">当前账号：{{username}}</p>
+                <el-input v-else v-model="username" placeholder="请输入要重置的账号"></el-input>
+                <el-input v-model="OldPassword" placeholder="旧密码"></el-input>
+                <el-input v-model="NewPassword" placeholder="新密码"></el-input>
+                <el-input v-model="ConfirmPassword" placeholder="确认密码"></el-input>
+                <el-input v-model="CaptchaCode" placeholder="验证码"></el-input>
+                <img :src="captchaCodeImg" alt="验证码" @click="getCaptchaCode">
+                <el-button class="login_container" type="primary" @click="resetButton">确认修改</el-button>
             </el-tab-pane>
         </el-tabs>
 
@@ -73,10 +90,13 @@
     import headTop from 'src/components/header/head'
     import alertTip from 'src/components/common/alertTip'
 
-    import {mapMutations, mapState} from 'vuex'
+    import {mapState,mapMutations,mapActions} from 'vuex'
     import { 
         signout,
-        changeAvatar
+        changeAvatar, //改变头像
+        getAddressList,  //获取收货地址
+        getcaptchas,  //获取验证码
+        changePassword ,//修改密码
     } from 'src/service/getData'
     import axios from 'axios'
     import {imgBaseUrl} from 'src/config/env'
@@ -98,13 +118,28 @@
                 showAlert: false,
                 alertText: null,
                 imgBaseUrl,
-                imageUrl: ''
+                imageUrl: '',
+                //收货地址列表
+                addressList: [],  
+                // 修改密码
+                OldPassword: '',
+                NewPassword: '',
+                ConfirmPassword: '',
+                CaptchaCode: '',
+                captchaCodeImg: ''
             }
         },
         computed:{
             ...mapState([
                 'userInfo', 'imgPath'
             ]),
+        },
+        created(){
+            this.getCaptchaCode()
+        },
+        mounted(){
+            this.getAddress()
+            this.avatar = this.userInfo.avatar;
         },
         beforeDestroy(){
             clearTimeout(this.timer)
@@ -113,6 +148,9 @@
             ...mapMutations([
                 'OUT_LOGIN', 'SAVE_AVANDER'
             ]),
+            ...mapActions([
+                'saveAddress'
+            ]),
             resetName3(){
                 this.$message({
                     showClose: true,
@@ -120,6 +158,48 @@
                     type: 'success'
                 });
             },
+            async uploadAvatar(){
+                //上传头像
+                if (this.userInfo) {
+                    let input = document.querySelector('.profileinfopanel-upload')
+                    let data = new FormData();
+                    data.append('file', input.files[0]);
+                    try{
+                        //上传到服务器
+                        let response = await changeAvatar(this.userInfo.user_id,data)
+                        //解析响应成json格式
+                        let res = await response.json();
+                        console.log(res)
+                        if (res.status == 1) {
+                            this.userInfo.avatar = res.image_path;
+                        }
+                    }catch (error) {
+                        this.$message.error('上传失败，请重新上传');
+                        throw new Error(error);
+                    }
+                }
+            },
+            getAddress(){
+                if (this.userInfo && this.userInfo.user_id) {
+				    this.saveAddress();
+                    this.addressList = this.state_Address.data
+                }
+            },
+            //修改密码
+            async getCaptchaCode(){
+                await getcaptchas().then((res) => {
+                    this.captchaCodeImg = res.data.code;
+                    console.log(this.captchaCodeImg)
+                });
+            },
+            async resetButton(){
+                await changePassword(this.username, this.OldPassWord, this.NewPassWord, this.ConfirmPassWord, this.CaptchaCode).then((res) => {
+                    console.log(res)
+                });
+            },
+
+
+
             exitlogin(){
                 this.show=true;
                 this.isEnter=true;
@@ -145,27 +225,7 @@
                     window.location.reload()
                 });
             },
-            async uploadAvatar(){
-                //上传头像
-                if (this.userInfo) {
-                    let input = document.querySelector('.profileinfopanel-upload')
-                    let data = new FormData();
-                    data.append('file', input.files[0]);
-                    try{
-                        //上传到服务器
-                        let response = await changeAvatar(this.userInfo.user_id,data)
-                        //解析响应成json格式
-                        let res = await response.json();
-                        console.log(res)
-                        if (res.status == 1) {
-                            this.userInfo.avatar = res.image_path;
-                        }
-                    }catch (error) {
-                        this.$message.error('上传失败，请重新上传');
-                        throw new Error(error);
-                    }
-                }
-            }
+            
         },
         watch: {
             userInfo: function (value) {
@@ -193,9 +253,6 @@
             margin: 24px auto 0 auto;
             max-width: 980px;
             height: 600px;
-            .avatar {
-
-            }
         }
     }
     .profile-info{
