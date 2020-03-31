@@ -141,6 +141,7 @@
                     this.showAlert = true;
                     this.alertText = res.message;
                     this.getCaptchaCode()
+                    console.log(res.message)
                     return
                 }else{
                     this.showAlert = true;

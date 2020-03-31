@@ -51,9 +51,11 @@
             }
         },
         props: ['signinUp', 'headTitle', 'goBack'], //来自于父组件的数据
-        mounted(){
+        async mounted(){
             //获取用户信息
-            this.getUserInfo();
+            await this.getUserInfo();
+            //保存收货地址
+            this.saveAddress();
         },
         computed: {
             ...mapState([
@@ -66,7 +68,8 @@
                 'OUT_LOGIN'
             ]),
             ...mapActions([
-                'getUserInfo'
+                'getUserInfo',
+                'saveAddress'
             ]),
             gotoAddress(path){
         		this.$router.push(path)

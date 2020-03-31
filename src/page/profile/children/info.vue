@@ -3,18 +3,21 @@
         <head-top head-title="账户信息" go-back='true'></head-top>
 
         <el-tabs class="tabs" type="border-card" tab-position="left">
+            <!-- 修改用户名 -->
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-user"></i> 用户信息</span>
                 <p>当前用户名：{{username}}</p>
                 <el-input v-model="resetname" placeholder="请输入新的用户名" clearable style="width:200px"></el-input>
-                <el-button type="primary" @click="resetName3()">确认修改</el-button>
+                <el-button type="primary" @click="reset_Name()">确认修改</el-button>
             </el-tab-pane>
+            <!-- 修改头像 -->
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-s-custom"></i> 头像修改</span>
                 <img :src="imgBaseUrl + userInfo.avatar" style="width:180px;height:180px;">
                 <input type="file" class="profileinfopanel-upload" style="display: block">
                 <el-button type="primary" @click="uploadAvatar()">确认上传</el-button>
             </el-tab-pane>
+            <!-- 收货地址 -->
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-map-location"></i> 收货地址</span>
                 <ul>
@@ -27,20 +30,19 @@
                     </li>
                 </ul>
             </el-tab-pane>
+            <!-- 修改密码 -->
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-unlock"></i> 修改密码</span>
                 <p v-if="username">当前账号：{{username}}</p>
-                <el-input v-else v-model="username" placeholder="请输入要重置的账号"></el-input>
+                <el-input v-else v-model="username" placeholder="请输入要重置密码的账号"></el-input>
                 <el-input v-model="OldPassword" placeholder="旧密码"></el-input>
                 <el-input v-model="NewPassword" placeholder="新密码"></el-input>
                 <el-input v-model="ConfirmPassword" placeholder="确认密码"></el-input>
                 <el-input v-model="CaptchaCode" placeholder="验证码"></el-input>
                 <img :src="captchaCodeImg" alt="验证码" @click="getCaptchaCode">
-                <el-button class="login_container" type="primary" @click="resetButton">确认修改</el-button>
+                <el-button type="primary" @click="resetButton">确认修改</el-button>
             </el-tab-pane>
         </el-tabs>
-
-
 
         <!-- 主要信息 -->
         <section class="profile-info">
@@ -57,28 +59,7 @@
                     <p>修改</p>
                 </section>
             </router-link>
-
-            <el-button class="exitlogin" type="danger" @click="exitlogin">退出登录</el-button>
         </section>
-        <!-- 确认退出登录 -->
-        
-        <section class="coverpart" v-if="show">
-            <section class="cover-background"></section>
-            <section class="cover-content " :class="{'cover-animate' : isEnter, 'cover-animate-leave' : isLeave}">
-                <div class="sa-icon">
-                    <span class="sa-body"></span>
-                    <span class="sa-dot"></span>
-                </div>
-                <h2>是否退出登录</h2>
-                <div class="sa-botton">
-                    <button class="waiting" @click="waitingThing">再等等</button>
-                    <div style="display:inline-block;">
-                        <button class="quitlogin"  @click="outLogin">退出登录</button>
-                    </div>
-                </div>
-            </section>
-        </section>
-
         <alert-tip v-if="showAlert" @closeTip="showAlert = false" :alertText="alertText"></alert-tip>
         <transition name="router-slid" mode="out-in">
             <router-view></router-view>
@@ -109,9 +90,9 @@
         },
         data(){
             return{
-                username:'',    //用户名
-                resetname:'', //重置用户名
-                avatar:'',      //用户头像
+                username:'',    //当前用户名
+                resetname:'', //要重置的用户名
+                avatar: '',      //用户头像文件名
                 show:false,     //显示提示框
                 isEnter:true,  //是否登录
                 isLeave:false, //是否退出
@@ -130,34 +111,31 @@
             }
         },
         computed:{
+            // 使用对象展开运算符将 mapState 混入 computed 对象中
             ...mapState([
-                'userInfo', 'imgPath'
+                'userInfo','state_Address'
             ]),
         },
+        //生命周期
         created(){
             this.getCaptchaCode()
         },
         mounted(){
-            this.getAddress()
             this.avatar = this.userInfo.avatar;
+            console.log(this.avatar)
+            this.getAddress()
         },
-        beforeDestroy(){
-            clearTimeout(this.timer)
-        },
+
         methods: {
-            ...mapMutations([
-                'OUT_LOGIN', 'SAVE_AVANDER'
-            ]),
-            ...mapActions([
-                'saveAddress'
-            ]),
-            resetName3(){
+            //改用户名
+            reset_Name(){
                 this.$message({
                     showClose: true,
                     message: '没有修改用户名这个接口，等我后面写服务器的时候再加，嘻嘻',
                     type: 'success'
                 });
             },
+            //改头像
             async uploadAvatar(){
                 //上传头像
                 if (this.userInfo) {
@@ -169,7 +147,6 @@
                         let response = await changeAvatar(this.userInfo.user_id,data)
                         //解析响应成json格式
                         let res = await response.json();
-                        console.log(res)
                         if (res.status == 1) {
                             this.userInfo.avatar = res.image_path;
                         }
@@ -179,53 +156,21 @@
                     }
                 }
             },
+            // 修改收货地址
             getAddress(){
-                if (this.userInfo && this.userInfo.user_id) {
-				    this.saveAddress();
-                    this.addressList = this.state_Address.data
-                }
+                this.addressList = this.state_Address.data
             },
             //修改密码
             async getCaptchaCode(){
                 await getcaptchas().then((res) => {
                     this.captchaCodeImg = res.data.code;
-                    console.log(this.captchaCodeImg)
                 });
             },
-            async resetButton(){
-                await changePassword(this.username, this.OldPassWord, this.NewPassWord, this.ConfirmPassWord, this.CaptchaCode).then((res) => {
-                    console.log(res)
+            resetButton(){
+                changePassword(this.username, this.OldPassWord, this.NewPassWord, this.ConfirmPassWord, this.CaptchaCode).then((res) => {
+                    alert('改密码这个接口貌似不管用。。。')
                 });
             },
-
-
-
-            exitlogin(){
-                this.show=true;
-                this.isEnter=true;
-                this.isLeave=false;
-            },
-            //取消退出
-            waitingThing(){
-                clearTimeout(this.timer)
-                this.isEnter=false;
-                this.isLeave=true;
-                this.timer = setTimeout(() =>{
-                    clearTimeout(this.timer)
-                    this.show=false;
-                },200)
-            },
-            //退出登录
-            async outLogin(){
-                this.OUT_LOGIN();
-                this.waitingThing();
-                this.$router.go(-1);
-                removeStore('user_id')
-                await signout().then(()=>{
-                    window.location.reload()
-                });
-            },
-            
         },
         watch: {
             userInfo: function (value) {
