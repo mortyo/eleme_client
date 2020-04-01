@@ -45,6 +45,7 @@
     export default {
         data(){
             return{
+                avatar: '',
                 activeIndex: '1',
                 imgBaseUrl,
                 centerDialogVisible: false
@@ -88,7 +89,6 @@
                 });
             }
         },
-
     }
 
 </script>
@@ -97,10 +97,7 @@
     @import '../../style/mixin';
 
     #head_top{
-        height: 100px;
-        left: 0;
-        top: 0;
-        @include wh(100%, 60px);  //宽高
+        width: 100%;
     }
     .head_login{
         right: 0.55rem;

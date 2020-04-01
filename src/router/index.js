@@ -30,13 +30,6 @@ const info = r => require.ensure([], () => r(require('../page/profile/children/i
 const address = r => require.ensure([], () => r(require('../page/profile/children/children/address')), 'address')
 const add = r => require.ensure([], () => r(require('../page/profile/children/children/children/add')), 'add')
 const addDetail = r => require.ensure([], () => r(require('../page/profile/children/children/children/children/addDetail')), 'addDetail')
-const balance = r => require.ensure([], () => r(require('../page/balance/balance')), 'balance')
-const benefit = r => require.ensure([], () => r(require('../page/benefit/benefit')), 'benefit')
-const hbHistory = r => require.ensure([], () => r(require('../page/benefit/children/hbHistory')), 'hbHistory')
-const exchange = r => require.ensure([], () => r(require('../page/benefit/children/exchange')), 'exchange')
-const commend = r => require.ensure([], () => r(require('../page/benefit/children/commend')), 'commend')
-const points = r => require.ensure([], () => r(require('../page/points/points')), 'points')
-const download = r => require.ensure([], () => r(require('../page/download/download')), 'download')
 
 const routes = [
     //空路径直接导航到/home
@@ -113,7 +106,7 @@ const routes = [
     //登录注册页
     {
         path: '/login',
-        component: login
+        component: login,
     },
     //个人信息页
     {
@@ -151,36 +144,6 @@ const routes = [
             component: orderDetail,
         }, ]
     },
-    //下载页
-    {
-        path: '/download',
-        component: download
-    },
-    //余额
-    {
-        path: '/balance',
-        component: balance,
-    },
-    //我的优惠页
-    {
-        path: '/benefit',
-        component: benefit,
-        children: [{
-            path: 'hbHistory', //历史红包
-            component: hbHistory,
-        }, {
-            path: 'exchange', //兑换红包
-            component: exchange,
-        }, {
-            path: 'commend', //推荐有奖
-            component: commend,
-        },]
-    },
-    //我的积分页
-    {
-        path: '/points',
-        component: points,
-    },
 ]
 
 Vue.use(VueRouter)
@@ -190,14 +153,15 @@ const router = new VueRouter({
     strict: process.env.NODE_ENV !== 'production',
     // 路选项，滑动行为
 	scrollBehavior (to, from, savedPosition) {
+        //return 期望滚动到哪个的位置
 	    if (savedPosition) {
-		    return savedPosition
+		    return { x: 0,y: 0 }  //前进后退时返回顶部
 		} else {
 			if (from.meta.keepAlive) {
-				from.meta.savedPosition = document.body.scrollTop;
+                from.meta.savedPosition = document.body.scrollTop;  //Element.scrollTop 属性可以获取或设置一个元素的内容垂直滚动的像素数
 			}
 		    return { x: 0, y: to.meta.savedPosition || 0 }
-		}
+        }
 	}
 })
 

@@ -20,21 +20,31 @@
 </template>
 
 <script>
-    import { mapMutations } from 'vuex'
+    import { mapState,mapMutations } from 'vuex'
     import { getcaptchas, accountLogin } from '../../service/getData'
 
     export default {
         data(){
             return {
-                userInfo: null, //获取到的用户信息
+                userInfoList: null, //获取到的用户信息
                 userAccount: null, //用户名
                 passWord: null, //密码
                 captchaCodeImg: null, //验证码地址
                 codeNumber: null, //验证码
             }
         },
+        computed:{
+            ...mapState([
+                'userInfo'
+            ])
+        },
         created(){
             this.getCaptchaCode();
+        },
+        mounted(){
+            if(this.userInfo&&this.userInfo.user_id){
+                this.$router.push('/profile')   //当有用户登录时跳转到profile页面
+            }
         },
         methods: {
             ...mapMutations([
@@ -72,14 +82,14 @@
                 }
                 //用户名登录
                 let res = await accountLogin(this.userAccount, this.passWord, this.codeNumber);
-                this.userInfo = res.data
+                this.userInfoList = res.data
                 console.log(res.data)
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
-                if (!this.userInfo.user_id) {
+                if (!this.userInfoList.user_id) {
                     this.$message({
                         type: 'error',
                         showClose: true,
-                        message: this.userInfo.message
+                        message: this.userInfoList.message
                     });
                     this.getCaptchaCode();
                 }else{
@@ -88,7 +98,7 @@
                         showClose: true,
                         message: '密码正确，登录成功！',
                     });
-                    this.RECORD_USERINFO(this.userInfo);
+                    this.RECORD_USERINFO(this.userInfoList);
                     this.$router.go(-1);
                 }
             },

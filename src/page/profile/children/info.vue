@@ -1,7 +1,5 @@
  <template>
-    <div class="rating_page">
-        <head-top head-title="账户信息" go-back='true'></head-top>
-
+    <div class="info_page">
         <el-tabs class="tabs" type="border-card" tab-position="left">
             <!-- 修改用户名 -->
             <el-tab-pane>
@@ -13,7 +11,7 @@
             <!-- 修改头像 -->
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-s-custom"></i> 头像修改</span>
-                <img :src="imgBaseUrl + userInfo.avatar" style="width:180px;height:180px;">
+                <img :src="imgBaseUrl + this.userInfo.avatar" style="width:180px;height:180px;">
                 <input type="file" class="profileinfopanel-upload" style="display: block">
                 <el-button type="primary" @click="uploadAvatar()">确认上传</el-button>
             </el-tab-pane>
@@ -22,11 +20,22 @@
                 <span slot="label"><i class="el-icon-map-location"></i> 收货地址</span>
                 <ul>
                     <li v-for="item in addressList" :key="item.id" style="border: 1px solid black;margin: 2px 0">
-                        <p>地址：{{item.address}}</p>
-                        <p>详细地址：{{item.address_detail}}</p>
+                        <p>地址：{{item.address}}
+                            <el-button type="primary" @click="edit_address()" size="mini">编辑</el-button>
+                            <el-popconfirm
+                                confirmButtonText='删了'
+                                cancelButtonText='先不删'
+                                icon="el-icon-info"
+                                iconColor="red"
+                                title="这是一条地址真的要删除吗？"
+                                >
+                                <el-button slot="reference" type="primary" @click="delete_address()" size="mini">删除</el-button>
+                            </el-popconfirm>
+                        </p>
+                        <!-- <p>详细地址：{{item.address_detail}}</p> -->
                         <p>电话：{{item.phone}}</p>
-                        <p>tag:{{item.tag}}</p>
-                        <p>创建时间：{{item.created_at}}</p>
+                        <!-- <p>tag:{{item.tag}}</p>
+                        <p>创建时间：{{item.created_at}}</p> -->
                     </li>
                 </ul>
             </el-tab-pane>
@@ -52,15 +61,8 @@
                     <p>修改</p>
                 </section>
             </router-link>
-
-            <router-link to="/forget" class="info-router">
-                <section class="headportrait">
-                    <h4>登录密码</h4>
-                    <p>修改</p>
-                </section>
-            </router-link>
         </section>
-        <alert-tip v-if="showAlert" @closeTip="showAlert = false" :alertText="alertText"></alert-tip>
+
         <transition name="router-slid" mode="out-in">
             <router-view></router-view>
         </transition>
@@ -68,9 +70,6 @@
 </template>
 
 <script>
-    import headTop from 'src/components/header/head'
-    import alertTip from 'src/components/common/alertTip'
-
     import {mapState,mapMutations,mapActions} from 'vuex'
     import { 
         signout,
@@ -84,24 +83,15 @@
     import {removeStore} from 'src/config/mUtils'
 
     export default {
-        components: {
-            headTop,
-            alertTip,
-        },
         data(){
             return{
                 username:'',    //当前用户名
                 resetname:'', //要重置的用户名
-                avatar: '',      //用户头像文件名
-                show:false,     //显示提示框
-                isEnter:true,  //是否登录
-                isLeave:false, //是否退出
-                showAlert: false,
-                alertText: null,
                 imgBaseUrl,
-                imageUrl: '',
                 //收货地址列表
                 addressList: [],  
+                edit: false,
+                delete: false,
                 // 修改密码
                 OldPassword: '',
                 NewPassword: '',
@@ -121,11 +111,8 @@
             this.getCaptchaCode()
         },
         mounted(){
-            this.avatar = this.userInfo.avatar;
-            console.log(this.avatar)
             this.getAddress()
         },
-
         methods: {
             //改用户名
             reset_Name(){
@@ -160,6 +147,12 @@
             getAddress(){
                 this.addressList = this.state_Address.data
             },
+            edit_address(){
+                this.edit = true
+            },
+            delete_address(){
+                this.delete = true
+            },
             //修改密码
             async getCaptchaCode(){
                 await getcaptchas().then((res) => {
@@ -186,14 +179,14 @@
 <style lang="scss" scoped>
     @import 'src/style/mixin.scss';
 
-    .rating_page{
+    .info_page{
         position: absolute;
-        top: 0;
+        top: 60px;
         left: 0;
         right: 0;
         bottom: 0;
         background-color: #f2f2f2;
-        z-index: 202;
+        z-index: 2;
         .tabs {
             margin: 24px auto 0 auto;
             max-width: 980px;
