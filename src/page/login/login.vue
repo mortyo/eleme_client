@@ -2,7 +2,7 @@
     <div class="container">
         <form class="loginForm">
             <label for="account">请输入账号</label>
-            <el-input id="account" class="input" tabindex="1" v-model.lazy="userAccount" prefix-icon="el-icon-user" placeholder="账号" clearable></el-input>
+            <el-input id="account" class="input" tabindex="1" v-model.lazy="userAccount" prefix-icon="el-icon-user" placeholder="账号" clearable autofocus></el-input>
             <label for="password">请输入密码</label>
             <router-link to="/forget" class="forget">忘记密码？</router-link>
             <el-input id="password" class="input" tabindex="2" v-model="passWord" prefix-icon="el-icon-lock" placeholder="密码" show-password></el-input>
@@ -11,7 +11,7 @@
                 <img v-show="captchaCodeImg" :src="captchaCodeImg" @click="getCaptchaCode">
                 <p @click="getCaptchaCode">换一张</p>
             </div>
-            <el-button type="primary" class="login" tabindex="4" round autofocus @click="Login">登录</el-button>
+            <el-button ba type="primary" id="login" tabindex="4" round @click="Login">登录</el-button>
         </form>
         <p class="login_tips">
             Tip：未注册过的账号，登录时将自动注册，注册过的用户可凭账号密码登录
@@ -145,7 +145,7 @@
                 cursor: pointer;
             }
         }
-        .login {
+        #login {
             margin-top: 21px;
             width: 100%;
         }

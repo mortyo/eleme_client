@@ -5,9 +5,14 @@
             <el-menu-item index="搜索" @click = "gotoAddress({path: `/search/${geohash}`})" class="guide_item">搜索</el-menu-item>
             <el-menu-item index="订单" @click = "gotoAddress('/order')" class="guide_item">订单</el-menu-item>
             <el-menu-item index="我的" @click = "gotoAddress('/profile')" class="guide_item">我的</el-menu-item>
+
+            <el-input placeholder="输入附近美食..." class="search">
+                <el-button slot="append" icon="el-icon-search"></el-button>
+            </el-input>
+
             <el-submenu index="profile" style="float:right" v-if="userInfo">
                 <template slot="title"><el-avatar :src="imgBaseUrl + userInfo.avatar"></el-avatar></template>
-                <el-menu-item index="2-1" @click = "gotoAddress('/profile')">个人中心</el-menu-item>
+                <el-menu-item index="2-1" @click = "gotoAddress('/profile')">当前用户：{{userInfo.username}}</el-menu-item>
                 <el-menu-item index="2-2" @click = "gotoAddress('/profile/info')">账号设置</el-menu-item>
                 <el-menu-item index="2-3" @click="showDialog()">退出</el-menu-item>
             </el-submenu>
@@ -99,6 +104,11 @@
     #head_top{
         width: 100%;
     }
+    .search {
+        width: 30%;
+        margin: 0 auto;
+        margin-top: 10px;
+    }
     .head_login{
         right: 0.55rem;
         @include sc(0.65rem, #fff); //字体大小，颜色
@@ -108,14 +118,6 @@
         }
     }
     .title_head{
-        @include center;
-        width: 50%;
         color: #fff;
-        text-align: center;
-        .title_text{
-            @include sc(0.8rem, #fff);
-            text-align: center;
-            font-weight: bold;
-        }
     }
 </style>
