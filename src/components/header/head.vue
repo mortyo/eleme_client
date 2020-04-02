@@ -5,11 +5,11 @@
             <el-menu-item index="搜索" @click = "gotoAddress({path: `/search/${geohash}`})" class="guide_item">搜索</el-menu-item>
             <el-menu-item index="订单" @click = "gotoAddress('/order')" class="guide_item">订单</el-menu-item>
             <el-menu-item index="我的" @click = "gotoAddress('/profile')" class="guide_item">我的</el-menu-item>
-
-            <el-input placeholder="输入附近美食..." class="search">
-                <el-button slot="append" icon="el-icon-search"></el-button>
-            </el-input>
-
+            <div id="search"> 
+                <el-input class="input" placeholder="搜索附近美食...">
+                    <el-button slot="append" icon="el-icon-search"></el-button>
+                </el-input>
+            </div>
             <el-submenu index="profile" style="float:right" v-if="userInfo">
                 <template slot="title"><el-avatar :src="imgBaseUrl + userInfo.avatar"></el-avatar></template>
                 <el-menu-item index="2-1" @click = "gotoAddress('/profile')">当前用户：{{userInfo.username}}</el-menu-item>
@@ -21,6 +21,8 @@
                     <span class="title_head">登录|注册</span>
                 </router-link>
             </el-menu-item>
+
+
             
             <!-- 所有插槽 -->
             <slot name='search'></slot>
@@ -104,10 +106,16 @@
     #head_top{
         width: 100%;
     }
-    .search {
-        width: 30%;
-        margin: 0 auto;
-        margin-top: 10px;
+    #search {
+        padding: 10px 24px;
+        width: 628px;
+        .input {
+            width: 500px;
+        }
+    }
+    .el-menu-demo {
+        display: flex;
+        justify-content: center;
     }
     .head_login{
         right: 0.55rem;

@@ -206,7 +206,7 @@ export default {
         margin: 24px auto 0 auto;
         padding: 0 16px;
         max-width: 1000px;
-        height: 1157px;
+        height: 1000px;
         .profile{
             display: block;
             float: left;

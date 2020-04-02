@@ -33,7 +33,7 @@
 <script>
     import headTop from 'src/components/header/head'
     import {mapState,mapActions,} from 'vuex'
-    import deleteAddress from 'src/service/getData'
+    import { deleteAddress } from 'src/service/getData'
 
     export default {
 		components: {
