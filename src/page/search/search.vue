@@ -66,15 +66,21 @@ export default {
             emptyResult: false, // 搜索结果为空时显示
         }
     },
-
     mounted(){
-        this.geohash = this.$route.params.geohash;
-        //获取搜索历史记录
-        if (getStore('searchHistory')) {
-            this.searchHistory = JSON.parse(getStore('searchHistory'));
-        }
+        if(this.$route.query.geohash&&this.$route.query.keyword){
+            searchRestaurant(this.$route.query.geohash,this.$route.query.keyword).then((res) => {
+                this.restaurantList = res.data
+                console.log(this.restaurantList)
+                this.emptyResult = !this.restaurantList.length;
+            })
+        }else{
+            this.geohash = this.$route.query.geohash;
+            //获取搜索历史记录
+            if (getStore('searchHistory')) {
+                this.searchHistory = JSON.parse(getStore('searchHistory'));
+            }
+        } 
     },
-
     methods:{
         //点击提交按钮，搜索结果并显示，同时将搜索内容存入历史记录
         async searchTarget(historyValue){

@@ -2,12 +2,12 @@
     <header id='head_top'>
         <el-menu class="el-menu-demo" mode="horizontal" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" @select="handleSelect">
             <el-menu-item index="首页" @click = "gotoAddress({path: '/msite', query: {geohash}})" class="guide_item">首页</el-menu-item>
-            <el-menu-item index="搜索" @click = "gotoAddress({path: `/search/${geohash}`})" class="guide_item">搜索</el-menu-item>
+            <el-menu-item index="搜索" @click = "gotoAddress({path: '/search',query: {geohash}})" class="guide_item">搜索</el-menu-item>
             <el-menu-item index="订单" @click = "gotoAddress('/order')" class="guide_item">订单</el-menu-item>
             <el-menu-item index="我的" @click = "gotoAddress('/profile')" class="guide_item">我的</el-menu-item>
             <div id="search"> 
-                <el-input class="input" placeholder="搜索附近美食...">
-                    <el-button slot="append" icon="el-icon-search"></el-button>
+                <el-input class="input" v-model="keyword" placeholder="搜索附近美食..." clearable>
+                    <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
                 </el-input>
             </div>
             <el-submenu index="profile" style="float:right" v-if="userInfo">
@@ -21,8 +21,6 @@
                     <span class="title_head">登录|注册</span>
                 </router-link>
             </el-menu-item>
-
-
             
             <!-- 所有插槽 -->
             <slot name='search'></slot>
@@ -54,6 +52,8 @@
             return{
                 avatar: '',
                 activeIndex: '1',
+                keyword: '', //搜索关键字
+                // search_show: false,  //是否显示搜索框
                 imgBaseUrl,
                 centerDialogVisible: false
             }
@@ -65,6 +65,7 @@
             //保存收货地址
             this.saveAddress();
         },
+
         computed: {
             ...mapState([
                 'userInfo',
@@ -83,7 +84,27 @@
         		this.$router.push(path)
             },
             handleSelect(key, keyPath) {
-                console.log(key, keyPath);
+                // console.log(key, keyPath);
+            },
+            //搜索
+            async search(){
+                if(!this.geohash){
+                    this.$confirm('当前还没有定位，是否去定位再搜？', '提示', {
+                        confirmButtonText: '去定位',
+                        cancelButtonText: '算了，先不定',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$router.push('/home')
+                    }).catch(() => {
+                        return
+                    });
+                }else if(!this.keyword){
+                    this.$message.error({message:'请先输入要搜索的内容喔!',showClose: true});
+                    return
+                }
+                await this.$router.push({ path: '/search',query: {geohash:this.geohash,keyword:this.keyword}})
+                this.keyword = ''
+                // this.search_show = false
             },
             showDialog(){
                 this.centerDialogVisible = true;

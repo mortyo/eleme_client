@@ -55,7 +55,7 @@ const routes = [
     },
     //搜索页
     {
-        path: '/search/:geohash',
+        path: '/search/',
         component: search
     },
     //商铺详情页
