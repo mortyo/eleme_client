@@ -1,28 +1,14 @@
 <template>
     <div class="restContainer">
         <form class="restForm">
-            <section class="input_container phone_number">
-                <input type="text" placeholder="账号" name="phone" maxlength="11" v-model="phoneNumber" @input="inputPhone">
-            </section>
-             <section class="input_container">
-                <input type="text" placeholder="旧密码" name="oldPassWord" v-model="oldPassWord">
-            </section>
-            <section class="input_container">
-                <input type="text" placeholder="请输入新密码" name="newPassWord" v-model="newPassWord">
-            </section>
-            <section class="input_container">
-                <input type="text" placeholder="请确认密码" name="confirmPassWord" v-model="confirmPassWord">
-            </section>
-            <section class="input_container captcha_code_container">
-                <input type="text" placeholder="验证码" name="mobileCode" maxlength="6" v-model="mobileCode">
-                <div class="img_change_img">
-                    <img v-show="captchaCodeImg" :src="captchaCodeImg">
-                    <div class="change_img" @click="getCaptchaCode">
-                        <p>看不清</p>
-                        <p>换一张</p>
-                    </div>
-                </div>
-            </section>
+            <el-input v-model="phoneNumber" maxlength="11" clearable placeholder="请输入要更改密码的账号"></el-input>
+            <el-input v-model="oldPassWord" show-password placeholder="请输入旧密码"></el-input>
+            <el-input v-model="newPassWord" show-password placeholder="请输入新密码"></el-input>
+            <el-input v-model="confirmPassWord" show-password placeholder="请确认新密码"></el-input>
+            <div>
+                <el-input v-model="mobileCode" maxlength="4" placeholder="验证码"></el-input>
+                <img :src="captchaCodeImg" alt="验证码" @click="getCaptchaCode">
+            </div>
         </form>
         <el-button class="login_container" type="primary" @click="resetButton">确认修改</el-button>
     </div>
@@ -51,15 +37,7 @@
             this.getCaptchaCode()
         },
         methods: {
-            //判断输入的电话号码
-            inputPhone(){
-                if(/.+/gi.test(this.phoneNumber)){
-                    this.rightPhoneNumber = true;
-                }else{
-                    this.rightPhoneNumber = false;
-                }
-            },
-             async getCaptchaCode(){
+            async getCaptchaCode(){
                 let res = await getcaptchas();
                 this.captchaCodeImg = res.data.code;
             },
