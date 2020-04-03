@@ -30,30 +30,29 @@
                     <span slot="label"><i class="el-icon-shopping-cart-full"></i> 我的订单</span>
                         <el-tabs v-model="activeName">
                             <el-tab-pane class="allorder" label="全部订单" name="all">
-                                    <ul class="order_head">
-                                        <li id="name">商品</li>
-                                        <li id="total">实付款</li>
-                                        <li id="stat">交易状态</li>
-                                        <li id="operate">交易操作</li>
-                                    </ul>
-                                    <ul class="order_data">
-                                        <li v-for="item in orderlist" :key="item.key">
-                                            <div>
-                                                {{item.formatted_created_at}} 
-                                                <img alt="商家图片"> 
-                                                {{item.restaurant_name}}
-                                                订单详情
-                                            </div>
-                                            <div>
-                                                <img alt="商品图片"> 
-                                                {{item.basket.group[0][0].name}}{{item.basket.group[0].length > 1 ? ' 等' + item.basket.group[0].length + '件商品' : ''}}
-                                                ¥{{item.total_amount.toFixed(2)}}
-                                                {{item.status_bar.title}}
-                                                <div style="display:inline" v-if="item.status_bar.title == '等待支付'">去支付(time)</div>
-                                                <div style="display:inline" v-else>重新下单</div>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                <ul>
+                                    <li v-for="item in orderlist" :key="item.key" class="order_data">
+                                        <div class="item_left">
+                                            <img :src="imgBaseUrl+item.restaurant_image_url" alt="商家图片" @click="showDetail(item)" class="restaurant_img"> 
+                                        </div>
+                                        <div class="item_middle">
+                                            <p>商家名称：<router-link :to="{path: '/shop', query: {geohash, id: item.restaurant_id}}" style="color:blue;">{{item.restaurant_name}}</router-link></p>
+                                            <p>商品：{{item.basket.group[0][0].name}}{{item.basket.group[0].length > 1 ? ' 等' + item.basket.group[0].length + '件' : ''}}</p>
+                                            <p>共支付：¥{{item.total_amount.toFixed(2)}}</p> 
+                                            <p>订单状态：{{item.status_bar.title}}</p> 
+                                            <div style="color:blue;" v-if="item.status_bar.title == '等待支付'">去支付(time)</div>
+                                            <router-link :to="{path: '/shop', query: {geohash, id: item.restaurant_id}}" style="color:blue;" v-else>重新下单</router-link>
+                                        </div>
+                                        <div class="item_right">
+                                            <p>下单时间：{{item.formatted_created_at}}</p>
+                                            <p>{{item.basket.deliver_fee.name}}：{{item.basket.deliver_fee.price}}元</p>
+                                            <p>{{item.basket.packing_fee.name}}：{{item.basket.packing_fee.quantity}}个，共{{item.basket.packing_fee.quantity*item.basket.packing_fee.price}}元</p>
+                                            <div v-if="item.basket.extra.length==0">无额外费用</div>
+                                            <div v-else>额外费用：{{item.basket.extra}}</div>
+                                            <p style="color:blue;cursor:pointer" @click="showDetail(item)">订单详情</p>
+                                        </div>
+                                    </li>
+                                </ul>
                             </el-tab-pane>
                             <el-tab-pane label="支付成功" name="sending">支付成功</el-tab-pane>
                             <el-tab-pane label="等待支付" name="wait_to_pay">等待支付</el-tab-pane>
@@ -61,7 +60,7 @@
                         </el-tabs>
                 </el-tab-pane>
                 <!-- 余额 -->
-                <el-tab-pane class="balance">
+                <el-tab-pane>
                     <span slot="label"><i class="el-icon-wallet"></i> 我的钱包</span>
                     <div class="cash">
                         <p>当前余额：<span>{{balance}}</span>元</p>
@@ -162,13 +161,16 @@ export default {
     },
     computed:{
         ...mapState([
-            'userInfo',
+            'userInfo','geohash'
         ]),
     },
     mounted(){
         this.initData();
     },
     methods:{
+        ...mapMutations([
+            'SAVE_ORDER'
+        ]),
         initData(){
             if (this.userInfo && this.userInfo.user_id) {
                 this.avatar = this.userInfo.avatar;
@@ -183,12 +185,18 @@ export default {
                 //获取订单数据
                 getOrderList(this.userInfo.id).then((res) => {
                     this.orderlist = res.data
+                    console.log(res.data)
+                })  
                 //获取红包数据
                 getHongbaoNum(this.userInfo.user_id).then((res) => {
                     this.hongbaoList = res.data
-                });
                 })
             }
+        },
+        //订单显示详情页
+        showDetail(item){
+            this.SAVE_ORDER(item);
+            this.$router.push({path:'/profile/orderDetail'});
         },
     },
     //监听userInfo数据变化是回调initData()函数初始化数据
@@ -203,13 +211,12 @@ export default {
 <style lang="scss" scoped>
    @import 'src/style/mixin';
     .profile_page{
+        display: flex;
         margin: 24px auto 0 auto;
         padding: 0 16px;
         max-width: 1000px;
         height: 1000px;
         .profile{
-            display: block;
-            float: left;
             width: 20%;
             padding-right: 16px;
             .avatar {
@@ -244,85 +251,35 @@ export default {
             }
         }
         .info-data{
-            display: block;
-            float: left;
             width: 80%;
-            background:$fc;
             .allorder {
-                .order_head {
-                    border: 1px solid #ececec;
-                    width: 100%;
-                    li {
-                        float: left;
-                        // display: block;
-                        // #name { width: 50%; };
-                        // #total {};
-                        // #stat {};
-                        // #operate{}
-                    }
-                }
                 .order_data {
-                    width: 100%;
-                    li {
-                        border: 1px solid #ececec;
-                        margin: 3px;
-                    }
-                }
-            }
-            // .balance {
-            //     .cash{
-            //         .take_out{
-
-            //         }
-            //     }
-            // }
-
-
-
-
-            ul{
-                display: block;
-                float: left;
-                .info-data-link{
-                    text-align:center;
-                    margin: 10px 0;
-                    border-right:1px solid #f1f1f1;
-                    span{
-                        display:block;
-                        width:100%;
-                    }
-                    .info-data-top{
-                        @include sc(.8rem,#333);
-                        padding: .853333rem 0 .453333rem;
-                        b{
-                            display:inline-block;
-                            @include sc(1.2rem,#f90);
-                            font-weight:700;
-                            line-height:1rem;
-                            font-family: Helvetica Neue,Tahoma;
+                    display: flex;
+                    width:742.39px;
+                    background: #fff;
+                    height: 90px;
+                    border: rgb(220, 223, 230) 1px solid;
+                    border-radius: 10px;
+                    margin-bottom: 4px;
+                    overflow: hidden;
+                    .item_left{
+                        .restaurant_img{
+                            height: 88px;
+                            width: 88px;
+                            border-radius: 10px;
+                            cursor:pointer;
                         }
                     }
-                    .info-data-bottom{
-                        @include sc(.9rem,#666);
-                        font-weight:400;
-                        padding-bottom:.453333rem;
-
+                    .item_middle{
+                        font-size: 10px;
+                        margin: 0 16px;
+                        overflow: hidden;
+                        width: 40%;
                     }
-                }
-                .info-data-link:nth-of-type(2){
-                    .info-data-top{
-                        b{
-                            color:#ff5f3e;
-                        }
-                    }
-
-                }
-                .info-data-link:nth-of-type(3){
-                    border:0;
-                    .info-data-top{
-                        b{
-                            color:#6ac20b;
-                        }
+                    .item_right {
+                        overflow: hidden;
+                        font-size: 10px;
+                        margin: 0 16px;
                     }
                 }
             }

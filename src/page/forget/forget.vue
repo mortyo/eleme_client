@@ -1,7 +1,5 @@
 <template>
     <div class="restContainer">
-        <head-top head-title="重置密码" goBack="true"></head-top>
-
         <form class="restForm">
             <section class="input_container phone_number">
                 <input type="text" placeholder="账号" name="phone" maxlength="11" v-model="phoneNumber" @input="inputPhone">
@@ -26,16 +24,11 @@
                 </div>
             </section>
         </form>
-
         <el-button class="login_container" type="primary" @click="resetButton">确认修改</el-button>
-        
-        <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="closeTip" :alertText="alertText"></alert-tip>
     </div>
 </template>
 
 <script>
-    import headTop from 'src/components/header/head'
-    import alertTip from 'src/components/common/alertTip'
     import { getcaptchas, changePassword } from 'src/service/getData'
 
     export default {
@@ -53,10 +46,6 @@
                 alertText: null, //提示的内容
                 accountType: 'mobile',//注册方式
             }
-        },
-        components: {
-            headTop,
-            alertTip,
         },
         created(){
             this.getCaptchaCode()
@@ -103,6 +92,7 @@
                 }
                 // 发送重置信息
                 let res = await changePassword(this.phoneNumber, this.oldPassWord, this.newPassWord, this.confirmPassWord, this.mobileCode);
+                console.log(res)
                 if (res.message) {
                     this.showAlert = true;
                     this.alertText = res.message;
@@ -113,10 +103,7 @@
                     this.showAlert = true;
                     this.alertText = '密码修改成功';
                 }
-            },
-            closeTip(){
-                this.showAlert = false;
-            }   
+            }  
         }
     }
 

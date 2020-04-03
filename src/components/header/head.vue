@@ -3,8 +3,7 @@
         <el-menu class="el-menu-demo" mode="horizontal" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" @select="handleSelect">
             <el-menu-item index="首页" @click = "gotoAddress({path: '/msite', query: {geohash}})" class="guide_item">首页</el-menu-item>
             <el-menu-item index="搜索" @click = "gotoAddress({path: '/search',query: {geohash}})" class="guide_item">搜索</el-menu-item>
-            <el-menu-item index="订单" @click = "gotoAddress('/order')" class="guide_item">订单</el-menu-item>
-            <el-menu-item index="我的" @click = "gotoAddress('/profile')" class="guide_item">我的</el-menu-item>
+            <el-menu-item index="我的" @click = "gotoAddress('/profile')" class="guide_item">订单</el-menu-item>
             <div id="search"> 
                 <el-input class="input" v-model="keyword" placeholder="搜索附近美食..." clearable>
                     <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>

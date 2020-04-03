@@ -19,14 +19,13 @@ const payment = r => require.ensure([], () => r(require('../page/confirmOrder/ch
 const userValidation = r => require.ensure([], () => r(require('../page/confirmOrder/children/userValidation')), 'userValidation')
 //搜索
 const search = r => require.ensure([], () => r(require('../page/search/search')), 'search')
-//订单
-const order = r => require.ensure([], () => r(require('../page/order/order')), 'order')
-const orderDetail = r => require.ensure([], () => r(require('../page/order/children/orderDetail')), 'orderDetail')
-//我的
+//登录
 const login = r => require.ensure([], () => r(require('../page/login/login')), 'login')
-const profile = r => require.ensure([], () => r(require('../page/profile/profile')), 'profile')
 const forget = r => require.ensure([], () => r(require('../page/forget/forget')), 'forget')
+//我的
+const profile = r => require.ensure([], () => r(require('../page/profile/profile')), 'profile')
 const info = r => require.ensure([], () => r(require('../page/profile/children/info')), 'info')
+const orderDetail = r => require.ensure([], () => r(require('../page/profile/children/orderDetail')), 'orderDetail')
 const address = r => require.ensure([], () => r(require('../page/profile/children/children/address')), 'address')
 const add = r => require.ensure([], () => r(require('../page/profile/children/children/children/add')), 'add')
 const addDetail = r => require.ensure([], () => r(require('../page/profile/children/children/children/children/addDetail')), 'addDetail')
@@ -127,22 +126,15 @@ const routes = [
                     }]
                 }]
             }]
-        },
-      ]
+        }, {
+            path: 'orderDetail', //订单详情页
+            component: orderDetail,
+        }]
     },
     //修改密码页
     {
         path: '/forget',
         component: forget
-    },
-    //订单列表页
-    {
-        path: '/order',
-        component: order,
-        children: [{
-            path: 'orderDetail', //订单详情页
-            component: orderDetail,
-        }, ]
     },
 ]
 
