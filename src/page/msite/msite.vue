@@ -8,7 +8,7 @@
 		</div>
 		<!-- 商店导航 -->
 		<div class="shopnav">
-			<router-link v-for="(item, index) in foodTypes" :key="index" :to="{path: '/food', query: {geohash, title: item.title, restaurant_category_id: getCategoryId(item.link)}}" class="link">
+			<router-link v-for="item in foodTypes" :key="item.index" :to="{path: '/food', query: {geohash, title: item.title, restaurant_category_id: getCategoryId(item.link)}}" class="link">
 					<img :src="imgBaseUrl + item.image_url">
 					<span>{{item.title}}</span>
 			</router-link>

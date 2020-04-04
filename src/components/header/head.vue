@@ -17,7 +17,7 @@
             </el-submenu>
             <el-menu-item index="login" style="float:right" v-else>
                 <router-link :to="'/login'">
-                    <span class="title_head">登录|注册</span>
+                    <span class="title_head">登录 | 注册</span>
                 </router-link>
             </el-menu-item>
             
@@ -30,7 +30,7 @@
             <!-- 显示登录or个人中心 -->
         </el-menu>
         <!-- 退出登录提示框 -->
-        <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+        <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center :modal-append-to-body="false">
             <span>确定退出吗？</span>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="centerDialogVisible = false;logout();" round>确 定</el-button>
@@ -61,7 +61,7 @@
         async mounted(){
             //获取用户信息
             await this.getUserInfo();
-            //保存收货地址
+            // 根据state.userInfo.user_id获取并保存收货地址到state
             this.saveAddress();
         },
 

@@ -64,13 +64,13 @@ import loading from './loading'
 
 export default {
 	components: {
-		loading,
+		loading
 	},
-	props: ['restaurantCategoryId', 'restaurantCategoryIds', 'sortByType', 'deliveryMode', 'supportIds', 'confirmSelect', 'geohash'],
+	props: [ 'geohash','restaurantCategoryId', 'restaurantCategoryIds', 'sortByType', 'deliveryMode', 'supportIds', 'confirmSelect'],
 	data(){
 		return {
-			offset: 0, // 批次加载店铺列表，每次加载20个 limit = 20
 			shopListArr:[], // 店铺列表数据
+			offset: 0, // 批次加载店铺列表，每次加载20个 limit = 20
 			preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
 			showLoading: true, //显示加载动画
 			touchend: false, //没有更多数据
@@ -92,12 +92,13 @@ export default {
 	methods: {
 		async initData(){
 			//获取数据
-			let res = await shopList(this.latitude, this.longitude, this.offset, this.restaurantCategoryId);
-			this.shopListArr = [...res.data];
-			if (res.data.length < 20) {
-				this.touchend = true;
-			}
-			this.hideLoading();
+			shopList(this.latitude, this.longitude, this.offset, this.restaurantCategoryId).then((res) => {
+				this.shopListArr = res.data;
+				if (res.data.length < 20) {
+					this.touchend = true;
+				}
+				this.hideLoading();
+			});
 		},
 		//到达底部加载更多数据
 		async loadMore(){

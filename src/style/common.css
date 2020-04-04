@@ -22,19 +22,19 @@ body:hover, div:hover, span:hover, header:hover, footer:hover, nav:hover, sectio
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 ::-webkit-scrollbar {
   width: 5px;
-  /* height: 111px; */
-  /* background-color: rgb(202, 36, 36); */
+  height: 60px; 
+  background-color: rgb(202, 36, 36);
 }
 
 /*定义滚动条轨道 内阴影+圆角*/
 ::-webkit-scrollbar-track {
-  /* border-radius: 2px; */
+  border-radius: 5px;
   background-color: #F5F5F5;
 }
 
 /*定义滑块 内阴影+圆角*/
 ::-webkit-scrollbar-thumb {
-  /* border-radius: 0px; */
+  border-radius: 5px;
   background-color: #545c64;
 }
 

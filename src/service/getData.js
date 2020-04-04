@@ -416,7 +416,7 @@ export const getSearchAddress = (keyword) => fetch('v1/pois',{
 * 36-删除地址
 */
 
-export const deleteAddress = (userid, addressid) => axios.get( '/v1/users/' + userid + '/addresses/' + addressid, {}, 'DELETE')
+export const deleteAddress = (userid, addressid) => axios.delete( '/v1/users/' + userid + '/addresses/' + addressid)
 
 
 

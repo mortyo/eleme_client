@@ -185,7 +185,6 @@ export default {
                 //获取订单数据
                 getOrderList(this.userInfo.id).then((res) => {
                     this.orderlist = res.data
-                    console.log(res.data)
                 })  
                 //获取红包数据
                 getHongbaoNum(this.userInfo.user_id).then((res) => {

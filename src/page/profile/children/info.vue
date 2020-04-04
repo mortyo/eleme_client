@@ -18,54 +18,52 @@
             <!-- 收货地址 -->
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-map-location"></i> 收货地址</span>
+                <el-button @click="add_address_btn()" type="primary"  size="mini" style="margin-bottom:4px">增加地址</el-button>
                 <ul>
-                    <li v-for="item in addressList" :key="item.id" style="border: 1px solid black;margin: 2px 0">
-                        <p>地址：{{item.address}}
+                    <li v-for="item in addressList" :key="item.id" class="addresslist">
+                        <div>
+                            <p>地址：{{item.address}}</p>
+                            <!-- <p>详细地址：{{item.address_detail}}</p> -->
+                            <p>电话：{{item.phone}}</p>
+                            <!-- <p>tag:{{item.tag}}</p>
+                            <p>创建时间：{{item.created_at}}</p> -->
+                        </div>
+                        <div>
                             <el-button type="primary" @click="edit_address()" size="mini">编辑</el-button>
-                            <el-popconfirm
-                                confirmButtonText='删了'
-                                cancelButtonText='先不删'
-                                icon="el-icon-info"
-                                iconColor="red"
-                                title="这是一条地址真的要删除吗？"
-                                >
-                                <el-button slot="reference" type="primary" @click="delete_address()" size="mini">删除</el-button>
-                            </el-popconfirm>
-                        </p>
-                        <!-- <p>详细地址：{{item.address_detail}}</p> -->
-                        <p>电话：{{item.phone}}</p>
-                        <!-- <p>tag:{{item.tag}}</p>
-                        <p>创建时间：{{item.created_at}}</p> -->
+                            <el-button slot="reference" type="primary" @click="delete_address(item.id)" size="mini">删除</el-button>
+                        </div>
                     </li>
                 </ul>
             </el-tab-pane>
             <!-- 修改密码 -->
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-unlock"></i> 修改密码</span>
-                <p v-if="username">当前账号：{{username}}</p>
-                <el-input v-else v-model="username" placeholder="请输入要重置密码的账号"></el-input>
-                <el-input v-model="OldPassword" placeholder="旧密码"></el-input>
-                <el-input v-model="NewPassword" placeholder="新密码"></el-input>
-                <el-input v-model="ConfirmPassword" placeholder="确认密码"></el-input>
-                <el-input v-model="CaptchaCode" placeholder="验证码"></el-input>
-                <img :src="captchaCodeImg" alt="验证码" @click="getCaptchaCode">
-                <el-button type="primary" @click="resetButton">确认修改</el-button>
+                <form class="restForm">
+                    <p v-if="username">当前账号：{{username}}</p>
+                    <el-input class="input" v-model="oldPassWord" show-password placeholder="请输入旧密码"></el-input>
+                    <el-input class="input" v-model="newPassWord" show-password placeholder="请输入新密码"></el-input>
+                    <el-input class="input" v-model="confirmPassWord" show-password placeholder="请确认新密码"></el-input>
+                    <div class="captcha">
+                        <el-input v-model="captchaCode" maxlength="4" placeholder="验证码"></el-input>
+                        <img :src="captchaCodeImg" alt="验证码" @click="getCaptchaCode">
+                    </div>
+                    <el-button id="resetbtn" type="primary" @click="resetButton">确认修改</el-button>
+                </form>
             </el-tab-pane>
         </el-tabs>
-
-        <!-- 主要信息 -->
-        <section class="profile-info">
-            <router-link to="/profile/info/address" class="info-router">
-                <section class="headportrait">
-                    <h4>收货地址</h4>
-                    <p>修改</p>
-                </section>
-            </router-link>
-        </section>
-
-        <transition name="router-slid" mode="out-in">
-            <router-view></router-view>
-        </transition>
+        <!-- 添加地址对话框 -->
+        <el-dialog title="添加地址" :visible.sync="add_address_show" :modal-append-to-body="false">
+            <el-form>
+                收货人<el-input v-model="username" placeholder="名字"></el-input>
+                手机号码<el-input v-model="tel" placeholder="手机号码"></el-input>
+                地址<el-input v-model="addAddress" placeholder="地址"></el-input>
+                详细地址<el-input v-model="detailedaddress" placeholder="详细地址"></el-input>                
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="add_address_show = false">取 消</el-button>
+                <el-button type="primary" @click="add_address_show = false;add_address()">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -75,6 +73,8 @@
         signout,
         changeAvatar, //改变头像
         getAddressList,  //获取收货地址
+        postAddAddress,  //增加地址
+        deleteAddress,  //删除地址
         getcaptchas,  //获取验证码
         changePassword ,//修改密码
     } from 'src/service/getData'
@@ -90,8 +90,13 @@
                 imgBaseUrl,
                 //收货地址列表
                 addressList: [],  
-                edit: false,
-                delete: false,
+                add_address_show:false,
+                edit_address_show:false,
+                tel: '',
+                standbytel:'', //备用手机号
+                addAddress: '',
+                detailedaddress: '',
+                message:'', //信息
                 // 修改密码
                 OldPassword: '',
                 NewPassword: '',
@@ -103,7 +108,7 @@
         computed:{
             // 使用对象展开运算符将 mapState 混入 computed 对象中
             ...mapState([
-                'userInfo','state_Address'
+                'userInfo','state_Address','geohash'
             ]),
         },
         //生命周期
@@ -114,6 +119,9 @@
             this.getAddress()
         },
         methods: {
+            ...mapActions([
+                'saveAddress'
+            ]),
             //改用户名
             reset_Name(){
                 this.$message({
@@ -147,11 +155,50 @@
             getAddress(){
                 this.addressList = this.state_Address.data
             },
-            edit_address(){
-                this.edit = true
+            add_address_btn(){
+                this.add_address_show = true
             },
-            delete_address(){
-                this.delete = true
+            add_address(){
+                postAddAddress(
+                    this.userInfo.user_id, 
+                    this.detailedaddress, 
+                    this.addAddress, 
+                    this.geohash, 
+                    this.username,
+                    this.message, 
+                    this.tel, 
+                    this.standbytel, 
+                    0, 1, '公司', 4).then((res) => {
+                    alert('添加地址这个接口有问题(っ °Д °;)っ')
+                })
+            },
+            edit_address(){
+                alert('没有编辑地址的接口(～﹃～)~zZ')
+            },
+            delete_address(id){
+                this.$confirm('此操作将删除该地址信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then( async () => {
+                    await deleteAddress(this.userInfo.user_id,id).then((res) => {
+                        console.log(res.data)
+                    });
+                    this.saveAddress();
+                    this.addressList = this.state_Address.data;
+                    this.$nextTick(() => {
+                        console.log('数据更新了')
+                    })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });          
+                });
             },
             //修改密码
             async getCaptchaCode(){
@@ -191,8 +238,41 @@
             margin: 24px auto 0 auto;
             max-width: 980px;
             height: 600px;
+            .restForm{
+                background-color: #fff;
+                width: 300px;
+                padding: 25px;
+                border: #d8dee2 solid 1px;
+                border-radius: 5px;
+                margin: 60px auto;
+                .input {
+                    margin-bottom: 8px;
+                }
+                .captcha {
+                    display: flex;
+                    margin-bottom: 8px;
+                    img {
+                        margin: 0 16px;
+                        cursor: pointer;
+                    }
+                }
+                #resetbtn {
+                    width: 100%;
+                }
+            }
+            .addresslist {
+                display: flex;
+                justify-content:space-between;
+                padding: 4px;
+                margin-bottom: 4px;
+                border: #d8dee2 1px solid;
+                border-radius: 5px;
+            }
         }
     }
+
+
+
     .profile-info{
         margin: 0 35%;
         
@@ -213,201 +293,11 @@
             @include sc(.8rem,#fff);
         }
     }
-    .info-router{
-        display:block;
+    .router-slid-enter-active, .router-slid-leave-active {
+        transition: all .4s;
     }
-    .coverpart{
-        @include wh(100%,100%);
-        @include allcover;
-        .cover-background{
-            @include wh(100%,100%);
-            @include allcover;
-            background:#000;
-            z-index:100;
-            opacity:.2;
-        }
-        .cover-content{
-            width:60%;
-            background:$fc;
-            padding:17px;
-            position:absolute;
-            top:20%;
-            left: 20%;
-            z-index:1000;
-            @include borderRadius(5px);
-            .sa-icon{
-                @include wh(90px,90px);
-                border:4px solid #f8bb86;
-                @include borderRadius(50%);
-                margin:20px auto;
-                position:relative;
-                .sa-body{
-                    @include wh(5px,47px);
-                    @include borderRadius(2px);
-                    background:#f8bb86;
-                    @include cl;
-                    top:10px;
-                }
-                .sa-dot{
-                    @include wh(7px,7px);
-                    @include borderRadius(50%);
-                    background:#f8bb86;
-                    @include cl;
-                    bottom:10px;
-                }
-            }
-            h2{
-                width:100%;
-                text-align:center;
-                @include sc(30px,#575757);
-                font-weight:500;
-                margin:25px 0;
-            }
-            .sa-botton{
-                width:100%;
-                text-align:center;
-
-                button{
-                    display:inline-block;
-                    padding:.4rem 1rem;
-                    @include borderRadius(5px);
-                    @include sc(.6rem,$fc);
-                    letter-spacing:1px;
-                    margin-top:26px;
-                }
-                .waiting{
-                    background:#C1C1C1;
-                    margin-right:.4rem;
-                }
-                .quitlogin{
-                    background:rgb(221, 107, 85);
-                }
-            }
-
-        }
-    }
-    @-webkit-keyframes bounceIn {
-    from, 20%, 40%, 60%, 80%, 100% {
-        -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-        animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    }
-
-    0% {
-        opacity: 0;
-        -webkit-transform: scale3d(.3, .3, .3);
-        transform: scale3d(.3, .3, .3);
-    }
-
-    20% {
-        -webkit-transform: scale3d(1.1, 1.1, 1.1);
-        transform: scale3d(1.1, 1.1, 1.1);
-    }
-
-    40% {
-        -webkit-transform: scale3d(.9, .9, .9);
-        transform: scale3d(.9, .9, .9);
-    }
-
-    60% {
-        opacity: 1;
-        -webkit-transform: scale3d(1.03, 1.03, 1.03);
-        transform: scale3d(1.03, 1.03, 1.03);
-    }
-
-    80% {
-        -webkit-transform: scale3d(.97, .97, .97);
-        transform: scale3d(.97, .97, .97);
-    }
-
-    100% {
-        opacity: 1;
-        -webkit-transform: scale3d(1, 1, 1);
-        transform: scale3d(1, 1, 1);
-    }
-}
-
-@keyframes bounceIn {
-    from, 20%, 40%, 60%, 80%, 100% {
-        -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-        animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    }
-
-    0% {
-        opacity: 0;
-        -webkit-transform: scale3d(.3, .3, .3);
-        transform: scale3d(.3, .3, .3);
-    }
-
-    20% {
-        -webkit-transform: scale3d(1.1, 1.1, 1.1);
-        transform: scale3d(1.1, 1.1, 1.1);
-    }
-
-    40% {
-        -webkit-transform: scale3d(.9, .9, .9);
-        transform: scale3d(.9, .9, .9);
-    }
-
-    60% {
-        opacity: 1;
-        -webkit-transform: scale3d(1.03, 1.03, 1.03);
-        transform: scale3d(1.03, 1.03, 1.03);
-    }
-
-    80% {
-        -webkit-transform: scale3d(.97, .97, .97);
-        transform: scale3d(.97, .97, .97);
-    }
-
-    100% {
-        opacity: 1;
-        -webkit-transform: scale3d(1, 1, 1);
-        transform: scale3d(1, 1, 1);
-    }
-}
-@-webkit-keyframes zoomOut {
-    from {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0;
-        -webkit-transform: scale3d(.3, .3, .3);
-        transform: scale3d(.3, .3, .3);
-    }
-
-    100% {
+    .router-slid-enter, .router-slid-leave-active {
+        transform: translate3d(2rem, 0, 0);
         opacity: 0;
     }
-}
-
-@keyframes zoomOut {
-    from {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0;
-        -webkit-transform: scale3d(.3, .3, .3);
-        transform: scale3d(.3, .3, .3);
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
-body .coverpart .cover-animate{
-    transition:all 1s;
-    animation:bounceIn .6s;
-}
-body .coverpart .cover-animate-leave{
-    animation:zoomOut .4s;
-}
-.router-slid-enter-active, .router-slid-leave-active {
-    transition: all .4s;
-}
-.router-slid-enter, .router-slid-leave-active {
-    transform: translate3d(2rem, 0, 0);
-    opacity: 0;
-}
 </style>

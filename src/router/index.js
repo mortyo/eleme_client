@@ -10,9 +10,6 @@ const shopDetail = r => require.ensure([], () => r(require('../page/shop/childre
 const shopSafe = r => require.ensure([], () => r(require('../page/shop/children/children/shopSafe')), 'shopSafe')
 const foodDetail = r => require.ensure([], () => r(require('../page/shop/children/foodDetail')), 'foodDetail')
 const confirmOrder = r => require.ensure([], () => r(require('../page/confirmOrder/confirmOrder')), 'confirmOrder')
-const chooseAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/chooseAddress')), 'chooseAddress')
-const addAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/children/addAddress')), 'addAddress')
-const searchAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/children/children/searchAddress')), 'searchAddress')
 const remark = r => require.ensure([], () => r(require('../page/confirmOrder/children/remark')), 'remark')
 const invoice = r => require.ensure([], () => r(require('../page/confirmOrder/children/invoice')), 'invoice')
 const payment = r => require.ensure([], () => r(require('../page/confirmOrder/children/payment')), 'payment')
@@ -26,9 +23,6 @@ const forget = r => require.ensure([], () => r(require('../page/forget/forget'))
 const profile = r => require.ensure([], () => r(require('../page/profile/profile')), 'profile')
 const info = r => require.ensure([], () => r(require('../page/profile/children/info')), 'info')
 const orderDetail = r => require.ensure([], () => r(require('../page/profile/children/orderDetail')), 'orderDetail')
-const address = r => require.ensure([], () => r(require('../page/profile/children/children/address')), 'address')
-const add = r => require.ensure([], () => r(require('../page/profile/children/children/children/add')), 'add')
-const addDetail = r => require.ensure([], () => r(require('../page/profile/children/children/children/children/addDetail')), 'addDetail')
 
 const routes = [
     //空路径直接导航到/home
@@ -89,18 +83,7 @@ const routes = [
         }, {
             path: 'userValidation', //用户验证
             component: userValidation,
-        }, {
-            path: 'chooseAddress', //选择地址
-            component: chooseAddress,
-            children: [{
-                path: 'addAddress', //添加地址
-                component: addAddress,
-                children: [{
-                    path: 'searchAddress', //搜索地址
-                    component: searchAddress,
-                }]
-            }, ]
-        }, ]
+        }]
     },
     //登录注册页
     {
@@ -114,18 +97,6 @@ const routes = [
         children: [{
             path: 'info', //个人信息详情页
             component: info,
-            children: [{
-                path: 'address',
-                component: address,     //编辑地址
-                children:[{
-                    path:'add',
-                    component:add,
-                    children:[{
-                        path:'addDetail',
-                        component:addDetail
-                    }]
-                }]
-            }]
         }, {
             path: 'orderDetail', //订单详情页
             component: orderDetail,
