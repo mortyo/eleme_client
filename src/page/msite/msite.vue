@@ -6,20 +6,14 @@
 				<router-link to="/home" class="change">&lt;地址不对？点击切换&gt;</router-link>
 			</p>
 		</div>
-		<!-- 商店导航 -->
 		<div class="shopnav">
 			<router-link v-for="item in foodTypes" :key="item.index" :to="{path: '/food', query: {geohash, title: item.title, restaurant_category_id: getCategoryId(item.link)}}" class="link">
 					<img :src="imgBaseUrl + item.image_url">
 					<span>{{item.title}}</span>
 			</router-link>
 		</div>
-		<!-- 商店列表 -->
-    	<div class="shop_list_container">
-	    	<header class="shop_header">
-	    		<span class="shop_header_title">附近商家</span>
-	    	</header>
-	    	<shop-list v-if="hasGetData" :geohash="geohash"></shop-list>
-    	</div>	
+		<p class="title">附近商家</p>
+	    <shop-list v-if="hasGetData" :geohash="geohash"></shop-list>
 		<el-backtop></el-backtop>
     </div>    
 </template>
@@ -85,15 +79,18 @@ export default {
     @import 'src/style/mixin';
 	.address{
 		text-align: center;
-		// .msite_title{
-
-		// }
 		.change{
 			color: blue;
 		}
 	}
 	.shopnav{
 		text-align: center;
+
+		.link {
+			border: #e1e4e8 1px solid;
+			border-radius: 5px;
+			margin: 0 2px;
+		}
 		.link:hover{
 			background-color:pink;
 			border-radius: 0.2rem;
@@ -102,15 +99,9 @@ export default {
 			width: 18px;
 		}
 	}
-	.shop_list_container{
-		margin-top: .4rem;
-		border-top: 0.025rem solid $bc;
-		background-color: #fff;
-		.shop_header{
-			.shop_header_title{
-				color: #999;
-				@include font(0.55rem, 1.6rem);
-			}
-		}
+	.title {
+		text-align:center;
+		color:#ff4400;
+		margin:8px
 	}
 </style>

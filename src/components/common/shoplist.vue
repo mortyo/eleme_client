@@ -1,12 +1,12 @@
 <template>
 	<div class="shoplist_container">
 		<!-- 如果附近有商家 -->
-		<ul v-if="shopListArr.length">
+		<ul v-if="shopListArr.length" class="shop_ul">
 			<router-link v-for="item in shopListArr" :key="item.id" :to="{path: 'shop', query:{geohash, id: item.id}}" class="shop_li">
 				<img :src="imgBaseUrl + item.image_path" class="shop_img">
 				<hgroup class="shop_right">
 					<header class="shop_detail_header">
-						<h4 :class="item.is_premium? 'premium': ''" class="shop_title ellipsis">{{item.name}}</h4>
+						<h4 :class="item.is_premium? 'premium': ''" class="shop_title">{{item.name}}</h4>
 						<ul class="shop_detail_ul">
 							<li v-for="item in item.supports" :key="item.id" class="supports">{{item.icon_name}}</li>
 						</ul>
@@ -94,6 +94,7 @@ export default {
 			//获取数据
 			shopList(this.latitude, this.longitude, this.offset, this.restaurantCategoryId).then((res) => {
 				this.shopListArr = res.data;
+				console.log(this.shopListArr)
 				if (res.data.length < 20) {
 					this.touchend = true;
 				}
@@ -171,30 +172,37 @@ export default {
 <style lang="scss" scoped>
 	@import 'src/style/mixin';
 	.shoplist_container{
-		margin: 3% 8%;
+		margin: 8px auto 0 auto;
+        max-width: 1250px;
+		.shop_ul{
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
 		.shop_li{
 			display: flex;
-			float: left;
-			width: 25%;
-			height: 5.8rem;
-			border: 0.025rem solid pink;
-			padding: 0.4rem 0.4rem;
+			width: 400px;
+			height: 90px;
+			background: #fff;
+			border:  #e1e4e8 1px solid;
+			margin: 4px;
+			border-radius: 5px;
 			.shop_img{
-				@include wh(5rem, 5rem);
-				margin-right: 0.4rem;
-				border-radius: 0.2rem;
+				width: 90px;
+				width: 90px;
+				border-radius: 5px;
 			}
 			.shop_right{
-				flex: auto;
+				margin: 4px;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
 				.shop_detail_header{
-					@include fj;
-					align-items: center;
+					display: flex;
+					justify-content: space-between;
 					.shop_title{
-						height: 1.5rem;;
-						width: 8.5rem;
+						height: 30px;;
 						color: #333;
-						@include font(1rem, 1rem, 'PingFangSC-Regular');
-						font-weight: 700;
 					}
 					.premium::before{
 						content: '品牌';
@@ -209,20 +217,18 @@ export default {
 					}
 					.shop_detail_ul{
 						display: flex;
-						transform: scale(1.2);//元素缩放
 						.supports{
-							@include sc(0.5rem, #999);
-							border: 0.025rem solid #666;
-							padding: 0 0.04rem;
-							border-radius: 0.08rem;
-							margin-left: 0.05rem;
+							@include sc(1px, #999);
+							height:fit-content;
+							border: 1px solid #666;
+							border-radius: 3px;
+							margin: 4px;
+							padding: 2px;
 						}
 					}
 				}
 				.rating_order_num{
-					@include fj(space-between);
-					height: 1.2rem;
-					margin-top: 0.52rem;
+					height: 30px;
 					.rating_order_num_left{
 						@include fj(flex-start);
 						.rating_section{
@@ -282,9 +288,10 @@ export default {
 			}
 		}
 		.shop_li:hover {
-			background-color: pink;
-			border-radius: 0.2rem
+			background: rgb(223, 223, 223);
+			border-radius: 5px;
 		}
+
 		.loadMore {
 			text-align: center;
 		}

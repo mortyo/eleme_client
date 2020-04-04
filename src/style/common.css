@@ -22,7 +22,7 @@ body:hover, div:hover, span:hover, header:hover, footer:hover, nav:hover, sectio
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 ::-webkit-scrollbar {
   width: 5px;
-  height: 60px; 
+  height: 5px; 
   background-color: rgb(202, 36, 36);
 }
 
