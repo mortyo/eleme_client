@@ -1,117 +1,24 @@
 <template>
     <div class="food_container">
-    	<section class="sort_container">
-			  <!-- 分类 -->
-    		<div class="sort_item" :class="{choose_type:sortBy == 'food'}" >
-    			<div class="sort_item_container" @click="chooseType('food')">
-    				<div class="sort_item_border">
-    				</div>
-    			</div>
-	    		<transition name="showlist" v-show="category">
-	    			<section v-show="sortBy == 'food'" class="category_container sort_detail_type">
-	    				<section class="category_left">
-	    					<ul>
-	    						<li v-for="(item, index) in category" :key="index" class="category_left_li" :class="{category_active:restaurant_category_id == item.id}" @click="selectCategoryName(item.id, index)">
-									<section>
-										<img :src="getImgPath(item.image_url)" v-if="index" class="category_icon">
-										<span>{{item.name}}</span>
-									</section>
-									<section>
-	    								<span class="category_count">{{item.count}}</span>
-									</section>
-	    						</li>
-	    					</ul>
-	    				</section>
-	    				<section class="category_right">
-	    					<ul>
-	    						<li v-for="(item, index) in categoryDetail" :key="index" class="category_right_li" @click="getCategoryIds(item.id, item.name)" :class="{category_right_choosed: restaurant_category_ids == item.id || (!restaurant_category_ids)&&index == 0}">
-	    							<span>{{item.name}}</span>
-	    							<span>{{item.count}}</span>
-	    						</li>
-	    					</ul>
-	    				</section>
-	    			</section>
-	    		</transition>
-    		</div>
-			  <!-- 排序 -->
-    		<div class="sort_item" :class="{choose_type:sortBy == 'sort'}">
-    			<div class="sort_item_container" @click="chooseType('sort')">
-    				<div class="sort_item_border">
-		    			<span :class="{category_title: sortBy == 'sort'}">排序</span>
-    				</div>
-    			</div>
-	    		<transition name="showlist">
-	    			<section v-show="sortBy == 'sort'" class="sort_detail_type">
-	    				<ul class="sort_list_container" @click="sortList($event)">
-	    					<li class="sort_list_li">
-	    						<p data="0" :class="{sort_select: sortByType == 0}">
-	    							<span>智能排序</span>
-	    						</p>
-	    					</li>
-	    					<li class="sort_list_li">
-	    						<p data="5" :class="{sort_select: sortByType == 5}">
-	    							<span>距离最近</span>
-	    						</p>
-	    					</li>
-	    					<li class="sort_list_li">
-	    						<p data="6" :class="{sort_select: sortByType == 6}">
-	    							<span>销量最高</span>
-	    						</p>
-	    					</li>
-	    					<li class="sort_list_li">
-	    						<p data="1" :class="{sort_select: sortByType == 1}">
-	    							<span>起送价最低</span>
-								</p>
-	    					</li>
-	    					<li class="sort_list_li">
-	    						<p data="2" :class="{sort_select: sortByType == 2}">
-	    							<span>配送速度最快</span>
-	    						</p>
-	    					</li>
-	    					<li class="sort_list_li">
-	    						<p data="3" :class="{sort_select: sortByType == 3}">
-	    							<span>评分最高</span>
-	    						</p>
-	    					</li>
-	    				</ul>
-	    			</section>
-	    		</transition>
-    		</div>
-			  <!-- 筛选 -->
-    		<div class="sort_item" :class="{choose_type:sortBy == 'activity'}">
-    			<div class="sort_item_container" @click="chooseType('activity')">
-	    			<span :class="{category_title: sortBy == 'activity'}">筛选</span>
-    			</div>
-	    		<transition name="showlist">
-	    			<section v-show="sortBy == 'activity'" class="sort_detail_type filter_container">
-	    				<section style="width: 100%;">
-	    					<header class="filter_header_style">配送方式</header>
-	    					<ul class="filter_ul">
-	    						<li v-for="(item, index) in Delivery" :key="index" class="filter_li" @click="selectDeliveryMode(item.id)">
-	    							<span :class="{selected_filter: delivery_mode == item.id}">{{item.text}}</span>
-	    						</li>
-	    					</ul>
-	    				</section>
-	    				<section style="width: 100%;">
-	    					<header class="filter_header_style">商家属性（可以多选）</header>
-	    					<ul class="filter_ul" style="paddingBottom: .5rem;">
-	    						<li v-for="(item,index) in Activity" :key="index" class="filter_li" @click="selectSupportIds(index, item.id)">
-	    							<span class="filter_icon" :style="{color: '#' + item.icon_color, borderColor: '#' + item.icon_color}" v-show="!support_ids[index].status">{{item.icon_name}}</span>
-	    							<span :class="{selected_filter: support_ids[index].status}">{{item.name}}</span>
-	    						</li>
-	    					</ul>
-	    				</section>
-	    				<footer class="confirm_filter">
-	    					<div class="clear_all filter_button_style" @click="clearSelect">清空</div>
-	    					<div class="confirm_select filter_button_style" @click="confirmSelectFun">确定<span v-show="filterNum">({{filterNum}})</span></div>
-	    				</footer>
-	    			</section>
-	    		</transition>
-    		</div>
-    	</section>
+		<div>
+			<el-cascader :options="category"  v-model="restaurant_category_id" :props="{ emitPath:false }" clearable></el-cascader>
+			<el-select v-model="order_by" placeholder="排序">
+    			<el-option v-for="item in sortCode" :key="item.value" :label="item.label" :value="item.value"></el-option>
+  			</el-select>
+			<el-select v-model="support_ids" multiple collapse-tags placeholder="筛选">
+				<el-option v-for="item in supportcode" :key="item.value" :label="item.label" :value="item.value"></el-option>
+			</el-select>
+			{{support_ids}}
+			<el-checkbox v-model="delivery_mode" true-label=1 border>蜂鸟专送</el-checkbox>
+		</div>
       <!-- 商店列表 -->
     	<section class="shop_list_container">
-	    	<shop-list :geohash="geohash" :restaurantCategoryId="restaurant_category_id" :restaurantCategoryIds="restaurant_category_ids" :sortByType='sortByType' :deliveryMode="delivery_mode" :confirmSelect="confirmStatus" :supportIds="support_ids" v-if="latitude"></shop-list>
+	    	<shop-list 
+			:geohash="geohash" 
+			:restaurantCategoryId="restaurant_category_id" 
+			:order_by='order_by' 
+			:deliveryMode="delivery_mode" 
+			:supportIds="support_ids" v-if="latitude"></shop-list>
     	</section>
     </div>
 </template>
@@ -131,17 +38,34 @@ export default {
 	data() {
 		return {
 			geohash: "", // city页面传递过来的地址geohash
-			restaurant_category_id: "", // 食品类型id值
-			restaurant_category_ids: "", //筛选类型的id
-			sortByType: null, // 根据何种方式排序
-			delivery_mode: null, // 选中的配送方式
-			confirmStatus: false, // 确认选择
-			support_ids: [], // 选中的商铺活动列表
 
-			sortBy: "", // 筛选的条件
+			restaurant_category_id: "", //筛选类型的id
+			order_by: null, // 根据何种方式排序
+			sortCode: [
+				{ value:1,label: '起送价'},
+				{ value:2,label: '配送速度'},
+				{ value:3,label: '评分'},
+				{ value:4,label: '智能排序(默认)'},
+				{ value:5,label: '距离最近'},
+				{ value:6,label: '销量最高'},
+			],
+			delivery_mode: null, // 选中的配送方式
+			support_ids: [], // 选中的商铺活动列表
+			supportcode: [
+				{ value:8,label: '品牌商家'},
+				{ value:7,label: '外卖保'},
+				{ value:9,label: '准时达'},
+				{ value:5,label: '新店'},
+				{ value:3,label: '在线支付'},
+				{ value:4,label: '开发票'},
+			],
+			
+			confirmStatus: false, // 确认选择
+
+			sortBy: null, // 筛选的条件
 			category: null, // category分类左侧数据
 			categoryDetail: null, // category分类右侧的详细数据
-			Delivery: null, // 配送方式数据
+			Delivery: null, // 配送方式数据 1 蜂鸟专送
 			Activity: null, // 商家支持活动数据
 			filterNum: 0, // 所选中的所有样式的集合
 		};
@@ -159,7 +83,7 @@ export default {
 	methods: {
 		...mapMutations(["RECORD_ADDRESS"]),
 		//初始化获取数据
-		async initData() {
+		initData() {
 			//获取从msite页面传递过来的参数
 			this.geohash = this.$route.query.geohash;
 			this.restaurant_category_id = this.$route.query.restaurant_category_id;
@@ -172,123 +96,37 @@ export default {
 				});
 				
 			}
-			//获取category分类左侧数据
+			//获取category分类,请求获取的数组重新生成新的数组category
 			foodCategory(this.latitude, this.longitude).then((res) => {
-				this.category = res.data;
 				// console.log(res.data)
-				//初始化时定位当前category分类左侧默认选择项，在右侧展示出其sub_categories列表
-				this.category.forEach(item => {
-					if (this.restaurant_category_id == item.id) {
-					this.categoryDetail = item.sub_categories;
+				this.category = res.data.map(object => {
+					return {
+						label: object.name,
+						value: object.id,
+						children: object.sub_categories.map(o => {
+							return{
+								label: o.name,
+								value: o.id,
+							}
+						})
 					}
-				});
+				})
 			});
-			//获取筛选列表的配送方式
-			foodDelivery(this.latitude, this.longitude).then((res) => {
-				this.Delivery = res.data;
-				console.log(res.data)
-			});
-			//获取筛选列表的商铺活动
-			foodActivity(this.latitude, this.longitude).then((res) => {
-				this.Activity = res.data;
-				console.log(res.data)
-				//记录support_ids的状态，默认不选中，点击状态取反，status为true时为选中状态
-				this.Activity.forEach((item, index) => {
-					this.support_ids[index] = { status: false, id: item.id };
-				});
-			});
+			// //获取筛选列表的配送方式
+			// foodDelivery(this.latitude, this.longitude).then((res) => {
+			// 	this.Delivery = res.data;
+			// });
+			// //获取筛选列表的商铺活动
+			// foodActivity(this.latitude, this.longitude).then((res) => {
+			// 	this.Activity = res.data;
+			// 	console.log(res.data)
+			// 	//记录support_ids的状态
+			// 	this.Activity.forEach((item, index) => {
+			// 		this.supportcode[index] = { label: item.name, value: item.id };
+			// 	});
+			// 	// console.log(this.supportcode)
+			// });
 		},
-		// 点击顶部三个选项，展示不同的列表，选中当前选项进行展示，同时收回其他选项
-		async chooseType(type) {
-		if (this.sortBy !== type) {
-			this.sortBy = type;
-			//food选项中头部标题发生改变，需要特殊处理
-			if (type == "food") {
-
-			} else {
-
-			}
-		} else {
-			//再次点击相同选项时收回列表
-			this.sortBy = "";
-			if (type == "food") {
-
-			}
-		}
-		},
-
-		//选中Category左侧列表的某个选项时，右侧渲染相应的sub_categories列表
-		selectCategoryName(id, index) {
-		//第一个选项 -- 全部商家 因为没有自己的列表，所以点击则默认获取选所有数据
-		if (index === 0) {
-			this.restaurant_category_ids = null;
-			this.sortBy = "";
-			//不是第一个选项时，右侧展示其子级sub_categories的列表
-		} else {
-			this.restaurant_category_id = id;
-			this.categoryDetail = this.category[index].sub_categories;
-		}
-		},
-		//选中Category右侧列表的某个选项时，进行筛选，重新获取数据并渲染
-		getCategoryIds(id, name) {
-		console.log(id, name)
-		this.restaurant_category_ids = id;
-		this.sortBy = "";
-		},
-		//点击某个排序方式，获取事件对象的data值，并根据获取的值重新获取数据渲染
-		sortList(event) {
-		let node;
-		// 如果点击的是 span 中的文字，则需要获取到 span 的父标签 p
-		if (event.target.nodeName.toUpperCase() !== "P") {
-			node = event.target.parentNode;
-		} else {
-			node = event.target;
-		}
-		this.sortByType = node.getAttribute("data");
-		this.sortBy = "";
-		},
-		//筛选选项中的配送方式选择
-		selectDeliveryMode(id) {
-		//delivery_mode为空时，选中当前项，并且filterNum加一
-		if (this.delivery_mode == null) {
-			this.filterNum++;
-			this.delivery_mode = id;
-			//delivery_mode为当前已有值时，清空所选项，并且filterNum减一
-		} else if (this.delivery_mode == id) {
-			this.filterNum--;
-			this.delivery_mode = null;
-			//delivery_mode已有值且不等于当前选择值，则赋值delivery_mode为当前所选id
-		} else {
-			this.delivery_mode = id;
-		}
-		},
-		//点击商家活动，状态取反
-		selectSupportIds(index, id) {
-		//数组替换新的值
-		this.support_ids.splice(index, 1, {
-			status: !this.support_ids[index].status,
-			id
-		});
-		//重新计算filterNum的个数
-		this.filterNum = this.delivery_mode == null ? 0 : 1;
-		this.support_ids.forEach(item => {
-			if (item.status) {
-			this.filterNum++;
-			}
-		});
-		},
-		//只有点击清空按钮才清空数据，否则一直保持原有状态
-		clearSelect() {
-		this.support_ids.map(item => (item.status = false));
-		this.filterNum = 0;
-		this.delivery_mode = null;
-		},
-		//点击确认时，将需要筛选的id值传递给子组件，并且收回列表
-		confirmSelectFun() {
-			//状态改变时，因为子组件进行了监听，会重新获取数据进行筛选
-			this.confirmStatus = !this.confirmStatus;
-			this.sortBy = "";
-			}
 	}
 };
 </script>

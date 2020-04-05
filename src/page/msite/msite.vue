@@ -79,13 +79,14 @@ export default {
     @import 'src/style/mixin';
 	.address{
 		text-align: center;
+		margin: 8px;
 		.change{
 			color: blue;
 		}
 	}
 	.shopnav{
 		text-align: center;
-
+		margin: 8px;
 		.link {
 			border: #e1e4e8 1px solid;
 			border-radius: 5px;
@@ -102,6 +103,8 @@ export default {
 	.title {
 		text-align:center;
 		color:#ff4400;
+		font-size: 120%;
+		font-weight: bold;
 		margin:8px
 	}
 </style>
