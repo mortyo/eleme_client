@@ -24,37 +24,25 @@
                         <p>{{shopDetailData.activities.length}}个活动</p>
                     </footer>
             </header>
-
             <el-tabs>
                 <el-tab-pane label="商品">
                     <section class="food_container">
-                        <!-- 菜单 -->
                         <section class="menu_container">
-                            <!-- 商品left -->
                             <section class="menu_left" id="wrapper_menu" ref="wrapperMenu">
                                 <ul>
                                     <li v-for="(item,index) in menuList" :key="index" class="menu_left_li" :class="{activity_menu: index == menuIndex}" @click="chooseMenu(index)">
-                                        <img :src="getImgPath(item.icon_url)" v-if="item.icon_url">
+                                        <img :src="imgBaseUrl+item.icon_url" v-if="item.icon_url">
                                         <span>{{item.name}}</span>
                                         <el-badge :value="categoryNum[index]" v-if="categoryNum[index]&&item.type==1"></el-badge>
                                     </li>
                                 </ul>
                             </section>
-                            <!-- 商品right -->
                             <section class="menu_right" ref="menuFoodList">
                                 <ul>
                                     <li v-for="(item,index) in menuList" :key="index">
-                                        <!-- 头 -->
                                         <header class="menu_detail_header">
-                                            <section class="menu_detail_header_left">
-                                                <strong class="menu_item_title">{{item.name}}</strong>
-                                                <span class="menu_item_description">{{item.description}}</span>
-                                            </section>
-                                            <span class="menu_detail_header_right" @click="showTitleDetail(index)"></span>
-                                            <p class="description_tip" v-if="index == TitleDetailIndex">
-                                                <span>{{item.name}}</span>
-                                                {{item.description}}
-                                            </p>
+                                            <strong class="menu_item_title">{{item.name}}</strong>
+                                            <span class="menu_item_description">{{item.description}}</span>
                                         </header>
                                         <section v-for="(foods,foodindex) in item.foods" :key="foodindex" class="menu_detail_list">
                                             <router-link  :to="{path: 'shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}" tag="div" class="menu_detail_link">
@@ -183,7 +171,7 @@
                                 </ul>
                                 <ul class="rating_list_ul">
                                     <li v-for="(item, index) in ratingList" :key="index" class="rating_list_li">
-                                        <img :src="getImgPath(item.avatar)" class="user_avatar">
+                                        <img :src="imgBaseUrl+item.avatar" class="user_avatar">
                                         <section class="rating_list_details">
                                             <header>
                                                 <section class="username_star">
@@ -196,7 +184,7 @@
                                             </header>
                                             <ul class="food_img_ul">
                                                 <li v-for="(item, index) in item.item_ratings" :key="index">
-                                                    <img :src="getImgPath(item.image_hash)" v-if="item.image_hash">
+                                                    <img :src="imgBaseUrl+item.image_hash" v-if="item.image_hash">
                                                 </li>
                                             </ul>
                                             <ul class="food_name_ul">
@@ -212,32 +200,7 @@
                     </section>  
                 </el-tab-pane>
             </el-tabs>
-
-            <transition name="fade">
-                <section class="activities_details" v-if="showActivities">
-                    <h2 class="activities_shoptitle">{{shopDetailData.name}}</h2>
-                    <h3 class="activities_ratingstar">
-                        <el-rate v-model="shopDetailData.rating" disabled show-score text-color="#ff9900" score-template="{value}"></el-rate>
-                    </h3>
-                    <section class="activities_list">
-                        <header class="activities_title_style"><span>优惠信息</span></header>
-                        <ul>
-                            <li v-for="item in shopDetailData.activities" :key="item.id">
-                                <span class="activities_icon" :style="{backgroundColor: '#' + item.icon_color, borderColor: '#' + item.icon_color}">{{item.icon_name}}</span>
-                                <span>{{item.description}}（APP专享）</span>
-                            </li>
-                        </ul>
-                    </section>
-                    <section class="activities_shopinfo">
-                        <header class="activities_title_style"><span>商家公告</span></header>
-                        <p>{{promotionInfo}}</p>
-                    </section>
-                    <el-button type="primary" @click.stop="showActivitiesFun">关闭</el-button>
-                </section>
-            </transition>
         </section>
-
-
 
         <!-- 规格弹出窗 -->
         <section class="shop_cart">
@@ -272,7 +235,6 @@
         <transition name="fade">
             <p class="show_delete_tip" v-if="showDeleteTip">多规格商品只能去购物车删除哦</p>
         </transition>
-
         <transition appear @after-appear = 'afterEnter' @before-appear="beforeEnter" v-for=" item in showMoveDot" :key="item.index">
             <span class="move_dot" v-if="item">
                 <svg class="move_liner">
@@ -295,7 +257,7 @@
 
     import loading from 'src/components/common/loading'
     import buyCart from 'src/components/common/buyCart'
-    import {loadMore, getImgPath} from 'src/components/common/mixin'
+    import { loadMore } from 'src/components/common/mixin'
     import {imgBaseUrl} from 'src/config/env'
     import BScroll from 'better-scroll'
 
@@ -351,7 +313,7 @@
         beforeDestroy(){
             // this.foodScroll.removeEventListener('scroll', )
         },
-        mixins: [loadMore, getImgPath],
+        mixins: [loadMore],
         components: {
             loading,
             buyCart
@@ -405,22 +367,27 @@
                     this.RECORD_ADDRESS(res);
                 }
                 //获取商铺信息
-                let res_shopDetailData = await shopDetails(this.shopId, this.latitude, this.longitude);
-                this.shopDetailData = res_shopDetailData.data;
-                console.log(this.shopDetailData)
+                await shopDetails(this.shopId, this.latitude, this.longitude).then((res) => {
+                    this.shopDetailData = res.data;
+                    // console.log(this.shopDetailData)
+                });
                 //获取商铺食品列表
-                let res_menuList = await foodMenu(this.shopId);
-                this.menuList = res_menuList.data;
-                console.log(this.menuList)
+                await foodMenu(this.shopId).then((res) => {
+                    this.menuList = res.data;
+                    console.log(this.menuList)
+                });
                 //评论列表
-                let res_ratingList = await getRatingList(this.shopId, this.ratingOffset);
-                this.ratingList = res_ratingList.data;
+                await getRatingList(this.shopId, this.ratingOffset).then((res) => {
+                    this.ratingList = res.data;
+                });
                 //商铺评论详情
-                let res_ratingScoresData = await ratingScores(this.shopId);
-                this.ratingScoresData = res_ratingScoresData.data;
+                await ratingScores(this.shopId).then((res) => {
+                    this.ratingScoresData = res.data;
+                });
                 //评论Tag列表
-                let res_ratingTagsList = await ratingTags(this.shopId);
-                this.ratingTagsList = res_ratingTagsList.data;
+                await ratingTags(this.shopId).then((res) => {
+                    this.ratingTagsList = res.data;
+                });
                 this.RECORD_SHOPDETAIL(this.shopDetailData)
                 //隐藏加载动画
                 this.hideLoading();
@@ -822,20 +789,19 @@
 
     .food_container{
         display: flex;
-        flex: 1;
         padding-bottom: 2rem;
         overflow: hidden;
     }
     .menu_container{
         display: flex;
-        flex: 1;
         overflow-y: hidden;
         position: relative;
         .menu_left{
-            width: 3.8rem;
+            width: 100px;
             .menu_left_li{
-                padding: .7rem .3rem;
-                border-bottom: 0.025rem solid #ededed;
+                width: 100px;
+                padding: 8px 4px;
+                border-bottom: 1px solid #ededed;
                 box-sizing: border-box;
                 border-left: 0.15rem solid #f8f8f8;
                 position: relative;
@@ -855,65 +821,22 @@
             }
         }
         .menu_right{
-            flex: 4;
-            overflow-y: auto;
             .menu_detail_header{
-                width: 100%;
-                padding: .4rem;
-                position: relative;
-                @include fj;
+                // padding: .4rem;
                 align-items: center;
-                .menu_detail_header_left{
-                    width: 11rem;
-                    white-space: nowrap;
+                .menu_item_title{
+                    @include sc(.7rem, #666);
+                    font-weight: bold;
+                }
+                .menu_item_description{
+                    @include sc(.5rem, #999);
+                    width: 30%;
                     overflow: hidden;
-                    .menu_item_title{
-                        @include sc(.7rem, #666);
-                        font-weight: bold;
-                    }
-                    .menu_item_description{
-                        @include sc(.5rem, #999);
-                        width: 30%;
-                        overflow: hidden;
-                    }
-                }
-                .menu_detail_header_right{
-                    @include wh(.5rem, 1rem);
-                    display: block;
-                    @include bis('../../images/icon_point.png');
-                    background-size: 100% .4rem;
-                    background-position: left center;
-                }
-                .description_tip{
-                    background-color: #39373a;
-                    opacity: 0.95;
-                    @include sc(.5rem, #fff);
-                    position: absolute;
-                    top: 1.5rem;
-                    z-index: 14;
-                    width: 8rem;
-                    right: .2rem;
-                    padding: .5rem .4rem;
-                    border: 1px;
-                    border-radius: .2rem;
-                    span{
-                        color: #fff;
-                        line-height: .6rem;
-                        font-size: .55rem;
-                    }
-                }
-                .description_tip::after{
-                    content: '';
-                    position: absolute;
-                    @include wh(.4rem, .4rem);
-                    background-color: #39373a;
-                    top: -.5rem;
-                    right: .7rem;
-                    transform: rotate(-45deg) translateY(.41rem);
                 }
             }
             .menu_detail_list{
                 float: left;
+                
                 width: 50%;
                 // height: 100px;
                 background-color: #fff;
