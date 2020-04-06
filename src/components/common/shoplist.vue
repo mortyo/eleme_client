@@ -9,7 +9,7 @@
 					</div>
 					<hgroup class="shop_right">
 						<header class="shop_detail_header">
-							<h4 :class="item.is_premium? 'premium': ''" class="shop_title">{{item.name}}</h4>
+							<h4 :class="item.is_premium ? 'premium': ''" class="shop_title">{{item.name}}</h4>
 							<ul class="shop_detail_ul">
 								<li v-for="item in item.supports" :key="item.id" class="supports">{{item.icon_name}}</li>
 							</ul>
@@ -66,7 +66,7 @@ export default {
 	components: {
 		loading
 	},
-	props: [ 'geohash','restaurantCategoryId', 'order_by', 'deliveryMode', 'supportIds'],
+	props: [ 'geohash','restaurantCategoryId', 'order_by', 'deliveryMode', 'support_ids'],
 	data(){
 		return {
 			shopListArr:[], // 店铺列表数据
@@ -86,11 +86,12 @@ export default {
 	},
 
 	methods: {
-		initData(){
+		async initData(){
 			//获取数据
 			shopList(this.latitude, this.longitude, this.offset, this.restaurantCategoryId).then((res) => {
 				this.shopListArr = res.data;
-				if (res.data.length < 15) {
+				console.log(res.data)
+				if (res.data.length < 24) {
 					this.touchend = true;
 				}
 				this.showLoading = false;
@@ -127,7 +128,7 @@ export default {
 		async reload(){
 			this.showLoading = true;
 			this.offset = 0;
-			let res = await shopList(this.latitude, this.longitude, this.offset, this.restaurantCategoryId, this.order_by, this.deliveryMode, this.supportIds);
+			let res = await shopList(this.latitude, this.longitude, this.offset, this.restaurantCategoryId, this.order_by, this.deliveryMode, this.support_ids);
 			this.showLoading = false;
 			//考虑到本地模拟数据是引用类型，所以返回一个新的数组
 			this.shopListArr = res.data;
@@ -146,7 +147,7 @@ export default {
 		deliveryMode: function (value){
 			this.reload();
 		},
-		supportIds: function (value){
+		support_ids: function (value){
 			this.reload();
 		}
 	}
@@ -196,6 +197,15 @@ export default {
 							}
 							.premium::before{
 								content: '品牌';
+								font-size: 50%;
+								line-height: 16px;
+								color: #333;
+								background-color: #ffd930;
+								border-radius: 3px;
+								margin-right: 4px;
+							}
+							.new::before {
+								content: '新店';
 								font-size: 50%;
 								line-height: 16px;
 								color: #333;

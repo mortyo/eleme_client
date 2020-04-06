@@ -26,12 +26,10 @@
 </template>
 
 <script>
-import headTop from 'src/components/header/head'
 import { cityGuess , searchplace } from 'src/service/getData'
 import { getStore, setStore, removeStore } from 'src/config/mUtils'
 
 export default {
-    components: { headTop },
     data(){
         return{
             inputVaule:'', // 搜索地址

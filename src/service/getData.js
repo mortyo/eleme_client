@@ -1,5 +1,6 @@
 import {getStore} from '../config/mUtils'
 import axios from 'axios'
+import qs from 'qs'
 
 /**
  * 1-获取首页默认地址
@@ -50,11 +51,7 @@ export const msiteFoodTypes = () => axios.get('/v2/index_entry');
  * 6-获取msite商铺列表
  */
 
-export const shopList = (latitude, longitude, offset, restaurant_category_id = '', order_by = '', delivery_mode = '', support_ids = [],restaurant_category_ids = '',) => {
-	let supportStr = '';
-	support_ids.forEach(item => {
-		supportStr += '&support_ids[]=' + item.id;
-	});
+export const shopList = (latitude, longitude, offset, restaurant_category_id, order_by, delivery_mode, support_ids) => {
 	let data = {
 		latitude,
 		longitude,
@@ -63,11 +60,14 @@ export const shopList = (latitude, longitude, offset, restaurant_category_id = '
 		restaurant_category_id,
 		order_by,
 		'delivery_mode[]': delivery_mode,
-		'support_ids[]': support_ids+supportStr,
-		'restaurant_category_ids[]': restaurant_category_ids,
+		support_ids: support_ids,
 	};
 	return axios.get('/shopping/restaurants', {
-		params: data
+		params: data,
+		//qs可以改变数组参数格式
+		paramsSerializer: params => {
+			return qs.stringify(params, { arrayFormat: 'brackets' })
+		}
 	});
 };
 
