@@ -44,48 +44,46 @@
                                             <strong class="menu_item_title">{{item.name}}</strong>
                                             <span class="menu_item_description">{{item.description}}</span>
                                         </header>
-                                        <section v-for="(foods,foodindex) in item.foods" :key="foodindex" class="menu_detail_list">
-                                            <router-link  :to="{path: 'shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}" tag="div" class="menu_detail_link">
-                                                <!-- food图片 -->
-                                                <section class="menu_food_img">
-                                                    <img :src="imgBaseUrl + foods.image_path">
-                                                </section>
-                                                <!-- food -->
-                                                <section class="menu_food_description">
-                                                    <!-- 食品描述，新 -->
-                                                    <h3 class="food_description_head">
-                                                        <strong class="description_foodname">{{foods.name}}</strong>
-                                                        <!-- <ul v-if="foods.attributes.length" class="attributes_ul">
-                                                            <li v-if="attribute" v-for="(attribute, foodindex) in foods.attributes" :key="foodindex" :style="{color: '#' + attribute.icon_color,borderColor:'#' + attribute.icon_color}" :class="{attribute_new: attribute.icon_name == '新'}">
-                                                            <p :style="{color: attribute.icon_name == '新'? '#fff' : '#' + attribute.icon_color}">{{attribute.icon_name == '新'? '新品':attribute.icon_name}}</p>
-                                                            </li>
-                                                        </ul> -->
-                                                    </h3>
-                                                    <p class="food_description_content">{{foods.description}}</p>
-                                                    <p class="food_description_sale_rating">
-                                                        <span>月售{{foods.month_sales}}份</span>
-                                                        <span>好评率{{foods.satisfy_rate}}%</span>
-                                                    </p>
-                                                    <p v-if="foods.activity" class="food_activity">
-                                                    <span :style="{color: '#' + foods.activity.image_text_color,borderColor:'#' +foods.activity.icon_color}">{{foods.activity.image_text}}</span>
-                                                    </p>
-                                                </section>
-                                            </router-link>
-                                            <!-- 脚部 -->
-                                            <footer>
-                                                <section class="food_price">
-                                                    <span>¥</span>
-                                                    <span>{{foods.specfoods[0].price}}</span>
-                                                    <span v-if="foods.specifications.length">起</span>
-                                                </section>
-
-                                                <buy-cart :shopId ='shopId' :foods='foods' @moveInCart="listenInCart" @showChooseList="showChooseList" @showReduceTip="showReduceTip" @showMoveDot="showMoveDotFun"></buy-cart>
-                                            </footer>
-                                        </section>
+                                        <div class="menu_detail_list_all">
+                                            <section v-for="(foods,foodindex) in item.foods" :key="foodindex" class="menu_detail_list">
+                                                <router-link  :to="{path: 'shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}" tag="div" class="menu_detail_link">
+                                                    <section class="menu_food_img">
+                                                        <img :src="imgBaseUrl + foods.image_path">
+                                                    </section>
+                                                    <section class="menu_food_description">
+                                                        <h3 class="food_description_head">
+                                                            <strong class="description_foodname">{{foods.name}}</strong>
+                                                            <ul v-if="foods.attributes.length" class="attributes_ul">
+                                                                <li v-for="(attribute, foodindex) in foods.attributes" :key="foodindex">
+                                                                    <p v-if="attribute" :style="{color: attribute.icon_name == '新'? '#fff' : '#' + attribute.icon_color}">{{attribute.icon_name == '新'? '新品':attribute.icon_name}}</p>
+                                                                </li>
+                                                            </ul>
+                                                        </h3>
+                                                        <p class="food_description_content">{{foods.description}}</p>
+                                                        <p class="food_description_sale_rating">
+                                                            <span>月售{{foods.month_sales}}份</span>
+                                                            <span>好评率{{foods.satisfy_rate}}%</span>
+                                                        </p>
+                                                        <p v-if="foods.activity" class="food_activity">
+                                                        <span :style="{color: '#' + foods.activity.image_text_color,borderColor:'#' +foods.activity.icon_color}">{{foods.activity.image_text}}</span>
+                                                        </p>
+                                                    </section>
+                                                </router-link>
+                                                <footer class="menu_detail_foot">
+                                                    <section class="food_price">
+                                                        <span>¥</span>
+                                                        <span>{{foods.specfoods[0].price}}</span>
+                                                        <span v-if="foods.specifications.length">起</span>
+                                                    </section>
+                                                    <buy-cart :shopId ='shopId' :foods='foods' @moveInCart="listenInCart" @showChooseList="showChooseList" @showReduceTip="showReduceTip" @showMoveDot="showMoveDotFun"></buy-cart>
+                                                </footer>
+                                            </section>
+                                        </div>
                                     </li>
                                 </ul>
                             </section>
                         </section>
+
                         <!-- 底部购物车 -->
                         <section class="buy_cart_container">
                             <section @click="toggleCartList" class="cart_icon_num">
@@ -135,7 +133,6 @@
                                 </section>
                             </section>
                         </transition>
-                        
                         <transition name="fade">
                             <div class="screen_cover" v-show="showCartList&&cartFoodList.length" @click="toggleCartList"></div>
                         </transition>
@@ -679,7 +676,7 @@
     .shop_page {
         display: flex;
         justify-content: center;
-        margin-top: 12px;
+        margin-top: 24px;
         .shop_container{
             width: 800px;     
         }
@@ -821,9 +818,8 @@
             }
         }
         .menu_right{
+            width: 700px;
             .menu_detail_header{
-                // padding: .4rem;
-                align-items: center;
                 .menu_item_title{
                     @include sc(.7rem, #666);
                     font-weight: bold;
@@ -834,90 +830,81 @@
                     overflow: hidden;
                 }
             }
-            .menu_detail_list{
-                float: left;
-                
-                width: 50%;
-                // height: 100px;
-                background-color: #fff;
-                padding: .6rem .4rem;
-                border-bottom: 1px solid #f8f8f8;
-                position: relative;
-                overflow: hidden;
-                .menu_detail_link{
-                    display:flex;
-                    .menu_food_img{
-                        margin-right: .4rem;
-                        img{
-                            @include wh(2rem, 2rem);
-                            display: block;
+            .menu_detail_list_all {
+                display: flex;
+                flex-wrap: wrap;
+                .menu_detail_list{
+                    display: flex;
+                    width: 350px;
+                    height: 90px;
+                    background-color: #fff;
+                    overflow: hidden;
+                    .menu_detail_link{
+                        display:flex;
+                        .menu_food_img{
+                            width: 90px;
+                            height: 90px;
+                            img{
+                                width: 90px;
+                                height: 90px;
+                            }
+                        }
+                        .menu_food_description{
+                            width: 180px;
+                            height: 90px;
+                            margin-left: 12px;
+                            .food_description_head{
+                                display: flex;
+                                height: 20px;
+                                .description_foodname{
+                                    width: 50%;
+                                    overflow: hidden;
+                                }
+                                .attributes_ul{
+                                    display: flex;
+                                    li{
+                                        font-size: 90%;
+                                        border-radius: 0.3rem;
+                                        margin-left: 4px;
+                                        transform: scale(.8);
+                                        background: gold;
+                                        p{
+                                            white-space: nowrap;
+                                        }
+                                    }
+                                }
+                            }
+                            .food_description_content{
+                                @include sc(.5rem, #999);
+                                height: 30px;
+                                line-height: 15px;
+                            }
+                            .food_description_sale_rating{
+                                height: 20px;
+                                span{
+                                    font-size: 50%;
+                                }
+                            }
+                            .food_activity{
+                                height: 20px;
+                                span{
+                                    font-size: 30%;
+                                    border: 1px solid currentColor;
+                                    border-radius: 3px;    
+                                }
+                            }
                         }
                     }
-                    .menu_food_description{
-                        width: 100%;
-                        .food_description_head{
-                            @include fj;
-                            margin-bottom: .2rem;
-                            .description_foodname{
-                                @include sc(.7rem, #333);
-                            }
-                            .attributes_ul{
-                                display: flex;
-                                li{
-                                    font-size: .3rem;
-                                    height: .6rem;
-                                    line-height: .35rem;
-                                    padding: .1rem;
-                                    border: 1px solid #666;
-                                    border-radius: 0.3rem;
-                                    margin-right: .1rem;
-                                    transform: scale(.8);
-                                    p{
-                                        white-space: nowrap;
-                                    }
-                                }
-                                .attribute_new{
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    background-color: #4cd964;
-                                    @include wh(2rem, 2rem);
-                                    display: flex;
-                                    align-items: flex-end;
-                                    transform: rotate(-45deg) translate(-.1rem, -1.5rem);
-                                    border: none;
-                                    border-radius: 0;
-                                    p{
-                                        @include sc(.4rem, #fff);
-                                        text-align: center;
-                                        flex: 1;
-                                        transform: scale(0.8) translate(0.1rem, -.1rem);
-                                    }
-                                }
-                            }
-                        }
-                        .food_description_content{
-                            @include sc(.5rem, #999);
-                            line-height: .6rem;
-                        }
-                        .food_description_sale_rating{
-                            line-height: .8rem;
-                            span{
-                                @include sc(.5rem, #333);
-                            }
-                        }
-                        .food_activity{
-                            line-height: .4rem;
-                            span{
-                                font-size: .3rem;
-                                border: 1px solid currentColor;
-                                border-radius: 0.3rem;
-                                padding: .08rem;
-                                display: inline-block;
-                                transform: scale(.8);
-                                margin-left: -0.35rem;
-
-                            }
+                }
+                .menu_detail_foot {
+                    width: 68px;
+                    .food_price {
+                        height: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        span {
+                            color: orangered;
                         }
                     }
                 }
@@ -1087,25 +1074,7 @@
         background-color: rgba(0,0,0,.3);
         z-index: 11;
     }
-    .change_show_type{
-        display: flex;
-        background-color: #fff;
-        padding: .3rem 0 .6rem;
-        border-bottom: 1px solid #ebebeb;
-        div{
-            flex: 1;
-            text-align: center;
-            span{
-                @include sc(.65rem, #666);
-                padding: .2rem .1rem;
-                border-bottom: 0.12rem solid #fff;
-            }
-            .activity_show{
-                color: #3190e8;
-                border-color: #3190e8;
-            }
-        }
-    }
+
     .rating_container{
         flex: 1;
         overflow-y: hidden;
@@ -1207,7 +1176,7 @@
                                 align-items: center;
                                 .time_spent_desc{
                                     @include sc(.55rem, #666)
-                                    margin-left: .15rem;
+                                    // margin-left: .15rem;
                                 }
                             }
                         }

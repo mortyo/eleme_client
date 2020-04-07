@@ -1,9 +1,6 @@
 <template>
-    <div class="confirmOrderContainer">
-        <head-top head-title="确认订单" goBack="true" signin-up='confirmOrder'></head-top>
-        
+    <div class="confirmOrderContainer">        
         <section v-if="!showLoading" class="container">
-            <!-- 添加收获地址 -->
             <router-link :to='{path: "/confirmOrder/chooseAddress", query: {id: checkoutData.cart.id, sig: checkoutData.sig}}' class="address_container">
                 <div class="address_empty_left">
                     <div class="add_address" v-if="!choosedAddress">请添加一个收货地址</div>
@@ -21,7 +18,7 @@
                 </div>
             </router-link>
 
-            <section class="delivery_model container_style">
+            <section class="delivery_model">
                 <p class="deliver_text">送达时间</p>
                 <section class="deliver_time">
                     <p>尽快送达 | 预计 {{checkoutData.delivery_reach_time}}</p>
@@ -29,7 +26,7 @@
                 </section>
             </section>
 
-            <section class="pay_way container_style">
+            <section class="pay_way">
                 <header class="header_style">
                     <span>支付方式</span>
                     <div class="more_type" @click="showPayWayFun">
@@ -44,6 +41,7 @@
 
             <section class="food_list">
                 <header v-if="checkoutData.cart.restaurant_info">
+                    <span>店铺：</span>
                     <img :src="imgBaseUrl + checkoutData.cart.restaurant_info.image_path">
                     <span>{{checkoutData.cart.restaurant_info.name}}</span>
                 </header>
@@ -70,21 +68,45 @@
                         <span>¥ {{checkoutData.cart.deliver_amount || 0}}</span>
                     </div>
                 </div>
-                <div class="food_item_style total_price">
-                    <p class="food_name ellipsis">订单 ¥{{checkoutData.cart.total}}</p>
+                <div class="total_price">
                     <div class="num_price">
-                        <span>待支付 ¥{{checkoutData.cart.total}}</span>
+                        <span>共 ¥{{checkoutData.cart.total}}</span>
                     </div>
                 </div>
             </section>
 
-            <section class="pay_way container_style">
-                <router-link :to='{path: "/confirmOrder/remark", query: {id: checkoutData.cart.id, sig: checkoutData.sig}}' class="header_style">
+            <section class="pay_way">
+                <div class="invoice">
                     <span>订单备注</span>
                     <div class="more_type">
                         <span class="ellipsis">{{remarkText||inputText? remarklist: '口味、偏好等'}}</span>
                     </div>
-                </router-link>
+                    <el-dialog title="备注信息" :visible.sync="show_remark">
+                        <section v-if="remarkList.length">
+                            <header>快速备注</header>
+                            <ul>
+                                <li v-for="(item,index) in remarkList" :key="index">
+                                    {{item}}
+                                </li>
+                            </ul>
+                        </section>
+                        <el-input
+                            type="textarea"
+                            maxlength="60"
+                            show-word-limit
+                            :autosize="{ minRows: 2, maxRows: 2}"
+                            placeholder="请输入备注信息"
+                            v-model="remark_text"
+                            >
+                        </el-input>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="show_remark = false">取 消</el-button>
+                            <el-button type="primary" @click="show_remark = false">确 定</el-button>
+                        </div>
+                    </el-dialog>
+                    <el-button type="primary" @click="show_remark = true" size="mini">修改</el-button>
+                </div>
+                <router-link :to='{path: "/confirmOrder/remark", query: {id: checkoutData.cart.id, sig: checkoutData.sig}}'>111 </router-link>
                 <router-link :to="checkoutData.invoice.is_available? '/confirmOrder/invoice': ''" class="hongbo" :class="{support_is_available: checkoutData.invoice.is_available}">
                     <span>发票抬头</span>
                     <span>
@@ -93,31 +115,33 @@
                 </router-link>
             </section>
 
-            <section>
+            <section class="confirm">
                 <p>待支付 ¥{{checkoutData.cart.total}}</p>
                 <el-button type="primary" @click="confrimOrder">确认下单</el-button>
             </section>
 
+
+
+
             <transition name="fade">
                 <div class="cover" v-if="showPayWay" @click="showPayWayFun"></div>
             </transition>
+
             <transition name="slid_up">
                 <div class="choose_type_Container" v-if="showPayWay">
                     <header>支付方式</header>
                     <ul>
                         <li v-for="item in checkoutData.payments" :key="item.id" :class="{choose: payWayId == item.id}">
                             <span>{{item.name}}<span v-if="!item.is_online_payment">{{item.description}}</span></span>
-                            <svg class="address_empty_right" @click="choosePayWay(item.is_online_payment, item.id)">
-                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#select"></use>
-                            </svg>
+                            <el-button type="primary" @click="choosePayWay(item.is_online_payment, item.id)">11</el-button>
                         </li>
                     </ul>
                 </div>
             </transition>
         </section>
-        <!-- 载入动画 -->
-        <loading v-if="showLoading"></loading>
+
         <alert-tip v-if="showAlert" @closeTip="showAlert = false" :alertText="alertText"></alert-tip>
+        <loading v-if="showLoading"></loading>
         <transition name="router-slid" mode="out-in">
             <router-view></router-view>
         </transition>
@@ -125,11 +149,17 @@
 </template>
 
 <script>
-    import {mapState, mapMutations} from 'vuex'
-    import headTop from 'src/components/header/head'
+    import { mapState, mapMutations } from 'vuex'
     import alertTip from 'src/components/common/alertTip'
     import loading from 'src/components/common/loading'
-    import {checkout, placeOrders, getAddressList} from 'src/service/getData'
+    import {
+        checkout, 
+        placeOrders, 
+        getAddressList,
+        getRemark,  //备注
+
+    } from 'src/service/getData'
+
     import {imgBaseUrl} from 'src/config/env'
 
     export default {
@@ -145,6 +175,11 @@
                 payWayId: 1, //付款方式
                 showAlert: false, //弹出框
                 alertText: null, //弹出框内容
+                //备注对话框
+                show_remark:false,
+                remark_text: '',
+                remarkList: []
+
             }
         },
         created(){
@@ -162,13 +197,8 @@
                 this.initData();
                 this.SAVE_GEOHASH(this.geohash);
             }
-            if (!(this.userInfo && this.userInfo.user_id)) {
-                // this.showAlert = true;
-                // this.alertText = '您还没有登录';
-            }
         },
         components: {
-            headTop,
             alertTip,
             loading,
         },
@@ -194,7 +224,15 @@
         },
         methods: {
             ...mapMutations([
-                'INIT_BUYCART', 'SAVE_GEOHASH', 'CHOOSE_ADDRESS', 'NEED_VALIDATION', 'SAVE_CART_ID_SIG', 'SAVE_ORDER_PARAM', 'ORDER_SUCCESS', 'SAVE_SHOPID'
+                'INIT_BUYCART', 
+                'SAVE_GEOHASH', 
+                'CHOOSE_ADDRESS', 
+                'NEED_VALIDATION', 
+                'SAVE_CART_ID_SIG', 
+                'SAVE_ORDER_PARAM', 
+                'ORDER_SUCCESS', 
+                'SAVE_SHOPID',
+                'CONFIRM_REMARK',   //确认备注信息
             ]),
             //初始化数据
             async initData(){
@@ -218,10 +256,22 @@
                     })
                 })
                 //检验订单是否满足条件
-                let res_checkoutData = await checkout(this.geohash, [newArr], this.shopId);
-                this.checkoutData = res_checkoutData.data;
+                await checkout(this.geohash, [newArr], this.shopId).then((res) => {
+                    this.checkoutData = res.data;
+                    console.log(this.checkoutData)
+                });
                 this.SAVE_CART_ID_SIG({cart_id: this.checkoutData.cart.id, sig:  this.checkoutData.sig})
                 this.initAddress();
+                //获取备注信息
+                await getRemark(this.checkoutData.id, this.checkoutData.sig).then((res) => {
+                    let remarkArr = res.data.remarks;
+                    remarkArr.forEach((arr) => {
+                        arr.forEach((remark) => {
+                            this.remarkList.push(remark)
+                        })
+                    })
+                    console.log(this.remarkList)   
+                });
                 this.showLoading = false;
             },
             //获取地址信息，第一个地址为默认选择地址
@@ -252,17 +302,32 @@
                     case '学校': return '#3190e8';
                 }
             },
+            //确认备注信息
+            chooseRemark(index, remarkIndex, text){
+
+            },
+            confirmRemark(){
+                this.CONFIRM_REMARK({remarkText: this.remarkText, inputText: this.inputText});
+            },
             //确认订单
             async confrimOrder(){
                 //用户未登录时弹出提示框
                 if (!(this.userInfo && this.userInfo.user_id)) {
-                    this.showAlert = true;
-                    this.alertText = '请登录';
+                    this.$confirm('当前未登录账号, 是否登录?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$router.push('/login')
+                    }).catch(err)
                     return
                     //未选择地址则提示
                 }else if(!this.choosedAddress){
-                    this.showAlert = true;
-                    this.alertText = '请添加一个收货地址';
+                    this.$message({
+                        showClose: true,
+                        message: '当前还没填写收货地址，请去填写',
+                        type: 'warning'
+                    })
                     return
                 }
                 //保存订单
@@ -276,15 +341,17 @@
                     sig: this.checkoutData.sig,
                 });
                 //发送订单信息
-                let orderRes = await placeOrders(this.userInfo.user_id, this.checkoutData.cart.id, this.choosedAddress.id, this.remarklist, this.checkoutData.cart.groups, this.geohash, this.checkoutData.sig);
-                //第一次下单的手机号需要进行验证，否则直接下单成功
-                if (orderRes.need_validation) {
-                    this.NEED_VALIDATION(orderRes.data);
-                    this.$router.push('/confirmOrder/userValidation');
-                }else{
-                    this.ORDER_SUCCESS(orderRes.data);
-                    this.$router.push('/confirmOrder/payment');
-                }
+                placeOrders(this.userInfo.user_id, this.checkoutData.cart.id, this.choosedAddress.id, this.remarklist, this.checkoutData.cart.groups, this.geohash, this.checkoutData.sig).then((res) => {
+                    console.log(res)
+                    //第一次下单的手机号需要进行验证，否则直接下单成功
+                    if (res.need_validation) {
+                        this.NEED_VALIDATION(res.data);
+                        this.$router.push('/confirmOrder/userValidation');
+                    }else{
+                        this.ORDER_SUCCESS(res.data);
+                        this.$router.push('/confirmOrder/payment');
+                    }
+                });
             },
         },
         watch: {
@@ -302,18 +369,11 @@
     @import 'src/style/mixin';
 
     .confirmOrderContainer{
-        padding-bottom: 3rem;
-        p, span{
-            font-family: Helvetica Neue,Tahoma,Arial;
-        }
+        margin-top: 24px;
     }
     .container{
-        margin: 0 20%;
-    }
-    .container_style{
-        background-color: #fff;
-        margin-top: .4rem;
-        padding: 0 .7rem;
+        width: 600px;
+        margin: 0 auto;
     }
     .address_container{
         min-height: 3.5rem;
@@ -330,7 +390,7 @@
                 @include sc(.7rem, #333);
             }
             .address_detail_container{
-                margin-left: .2rem;
+                margin-left: 12px;
                 header{
                     @include sc(.65rem, #333);
                     span:nth-of-type(1){
@@ -357,10 +417,6 @@
                 }
             }
         }
-    }
-    .address_empty_right{
-        @include wh(.6rem, .6rem);
-        fill: #999;
     }
     .delivery_model{
         border-left: .2rem solid $blue;
@@ -453,7 +509,7 @@
         .food_item_style{
             @include fj;
             line-height: 1.8rem;
-            padding: 0 .7rem;
+            padding: 0 12px;
             span,p{
                 @include sc(.65rem, #666);
             }
@@ -470,9 +526,22 @@
             }
         }
         .total_price{
-            border-top: 0.025rem solid #f5f5f5;
+            border-top: 1px solid #f5f5f5;
+            text-align: end;
+            line-height: 1.8rem;
+            padding: 0 12px;
         }
     }
+    .confirm {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        p {
+            margin-right: 16px;
+            color: #ff6600;
+        }
+    }
+
     .cover{
         position: fixed;
         top: 0;
@@ -483,10 +552,9 @@
         z-index: 203;
     }
     .choose_type_Container{
-        min-height: 10rem;
         background-color: #fff;
         position: fixed;
-        bottom: 0;
+        // bottom: 0;
         width: 100%;
         z-index: 204;
         header{
@@ -519,6 +587,7 @@
             }
         }
     }
+
     .fade-enter-active, .fade-leave-active {
         transition: opacity .3s;
     }

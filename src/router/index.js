@@ -5,15 +5,21 @@ import {routerMode} from '../config/env'
 const home = r => require.ensure([], () => r(require('../page/home/home')), 'home')
 const msite = r => require.ensure([], () => r(require('../page/msite/msite')), 'msite')
 const food = r => require.ensure([], () => r(require('../page/food/food')), 'food')
+//商店
 const shop = r => require.ensure([], () => r(require('../page/shop/shop')), 'shop')
 const shopDetail = r => require.ensure([], () => r(require('../page/shop/children/shopDetail')), 'shopDetail')
 const shopSafe = r => require.ensure([], () => r(require('../page/shop/children/children/shopSafe')), 'shopSafe')
 const foodDetail = r => require.ensure([], () => r(require('../page/shop/children/foodDetail')), 'foodDetail')
+//确认订单
 const confirmOrder = r => require.ensure([], () => r(require('../page/confirmOrder/confirmOrder')), 'confirmOrder')
+const chooseAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/chooseAddress')), 'chooseAddress')
+const addAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/children/addAddress')), 'addAddress')
+const searchAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/children/children/searchAddress')), 'searchAddress')
+
 const remark = r => require.ensure([], () => r(require('../page/confirmOrder/children/remark')), 'remark')
 const invoice = r => require.ensure([], () => r(require('../page/confirmOrder/children/invoice')), 'invoice')
 const payment = r => require.ensure([], () => r(require('../page/confirmOrder/children/payment')), 'payment')
-const userValidation = r => require.ensure([], () => r(require('../page/confirmOrder/children/userValidation')), 'userValidation')
+
 //搜索
 const search = r => require.ensure([], () => r(require('../page/search/search')), 'search')
 //登录
@@ -72,6 +78,17 @@ const routes = [
         path: '/confirmOrder',
         component: confirmOrder,
         children: [{
+            path: 'chooseAddress',
+            component: chooseAddress,
+            children: [{
+                path: 'addAddress',
+                component: addAddress,
+                children: [{
+                    path: 'searchAddress',
+                    component: searchAddress
+                }]
+            }]
+        },{
             path: 'remark', //订单备注
             component: remark,
         }, {
@@ -80,9 +97,6 @@ const routes = [
         }, {
             path: 'payment', //付款页面
             component: payment,
-        }, {
-            path: 'userValidation', //用户验证
-            component: userValidation,
         }]
     },
     //登录注册页
