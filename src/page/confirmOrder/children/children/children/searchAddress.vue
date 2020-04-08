@@ -1,42 +1,37 @@
  <template>
     <div class="search_address_page">
-        <section>
-            <head-top head-title="搜索" go-back='true'></head-top>
+        <section class="main">
             <form class="search_form">
-                <input type="search" name="search" placeholder="请输入小区/写字楼/学校等" v-model="searchValue">
-                <button @click.prevent="searchPlace()">搜索</button>
+                <el-input v-model="searchValue" placeholder="请输入小区/写字楼/学校等"></el-input>
+                <el-button type="primary" @click.prevent="searchPlace()">搜索</el-button>
             </form>
             <ul class="address_list" v-if="searchData">
-                <li v-for="(item, index) in searchData" :key="index" @click="choooedAddress(item)">
+                <li v-for="(item, index) in searchData" :key="index" @click="choooedAddress(item.address)">
                     <h4>{{item.name}}</h4>
                     <p>{{item.address}}</p>
                 </li>
             </ul>
-            <div v-else class="empty_tips">
-                <p>找不到地址？</p>
-                <p>尝试输入小区、写字楼或学校名</p>
-                <p>详细地址（如门牌号等）可稍后输入哦</p>
-            </div>
         </section>
     </div>
 </template>
 
 <script>
-    import headTop from 'src/components/header/head'
-    import {searchNearby} from 'src/service/getData'
+    import { cityGuess,searchplace } from 'src/service/getData'
     import {mapMutations} from 'vuex'
 
     export default {
-      data(){
+        data(){
             return{
+                city_id: '',
                	searchValue: null, //输入的搜索内容
                 searchData: null, //搜索的结果
             }
         },
-        components: {
-            headTop,
+        mounted(){
+            cityGuess().then((res) => {
+                this.city_id = res.data.id
+            })
         },
-        props:[],
         methods: {
             ...mapMutations([
                 'CHOOSE_SEARCH_ADDRESS'
@@ -44,16 +39,16 @@
             //搜索
             async searchPlace(){
                 if (this.searchValue) {
-                    res_searchData = await searchNearby(this.searchValue);
-                    this.searchData = res_searchData;
+                    searchplace(this.city_id,this.searchValue).then((res) => {
+                        this.searchData = res.data
+                    })
                 }
             },
             //选择搜素结果
             choooedAddress(item){
                 this.CHOOSE_SEARCH_ADDRESS(item);
-                this.$router.go(-1);
+                this.$router.go('/confirmOrder/chooseAddress/addAddress');
             },
-
         }
     }
 </script>
@@ -67,55 +62,30 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #fff;
+        background-color: #f5f5f5;
         z-index: 204;
         overflow-y: auto;
-        padding-top: 1.95rem;
-        p, span{
-            font-family: Helvetica Neue,Tahoma,Arial;
+        margin-top: 84px;
+        .main {
+            width: 600px;
+            margin: 0 auto;
         }
     }
     .search_form{
         display: flex;
-        padding: .7rem;
-        input{
-            @include sc(.65rem, #999);
-            flex: 4;
-            background-color: #f1f1f1;
-            margin-right: .6rem;
-            height: 1.5rem;
-            border-radius: 0.15rem;
-            padding: 0 .4rem;
-        }
-        button{
-            flex: 1;
-            @include sc(.65rem, #fff);
-            background-color: $blue;
-            border-radius: 0.15rem;
-        }
     }
     .address_list{
-        padding: .7rem;
+        padding: 16px;
         li{
-            padding: .7rem 0;
-            border-bottom: 0.025rem solid #f5f5f5;
-            line-height: 1rem;
+            cursor: pointer;
+            padding: 16px 0;
+            border-bottom: 1px solid #333;
             h4{
                 @include sc(.75rem, #555);
             }
             p{
                 @include sc(.65rem, #999);
             }
-        }
-    }
-    .empty_tips{
-        @include center;
-        width: 100%;
-        p{
-            @include sc(.5rem, #aaa);
-            line-height: .7rem;
-            text-align: center;
-
         }
     }
 </style>

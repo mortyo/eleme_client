@@ -8,7 +8,7 @@
                         <header>
                             <span>{{choosedAddress.name}}</span>
                             <span>{{choosedAddress.sex == 1? '先生':'女士'}}</span>
-                            <span>{{choosedAddress.phone}}</span>
+                            <span>({{choosedAddress.phone}})</span>
                         </header>
                         <div class="address_detail">
                             <span v-if="choosedAddress.tag" :style="{backgroundColor: iconColor(choosedAddress.tag)}">{{choosedAddress.tag}}</span>
@@ -47,7 +47,7 @@
                 </header>
                 <ul class="food_list_ul" v-if="checkoutData.cart.groups">
                     <li v-for="item in checkoutData.cart.groups[0]" :key="item.id" class="food_item_style">
-                        <p class="food_name ellipsis">{{item.name}}</p>
+                        <p class="food_name">{{item.name}}</p>
                         <div class="num_price">
                             <span>x {{item.quantity}}</span>
                             <span>¥{{item.price}}</span>
@@ -55,14 +55,14 @@
                     </li>
                 </ul>
                 <div class="food_item_style" v-if="checkoutData.cart.extra">
-                    <p class="food_name ellipsis">{{checkoutData.cart.extra[0].name}}</p>
+                    <p class="food_name">{{checkoutData.cart.extra[0].name}}</p>
                     <div class="num_price">
                         <span></span>
                         <span>¥ {{checkoutData.cart.extra[0].price}}</span>
                     </div>
                 </div>
                 <div class="food_item_style">
-                    <p class="food_name ellipsis">配送费</p>
+                    <p class="food_name">配送费</p>
                     <div class="num_price">
                         <span></span>
                         <span>¥ {{checkoutData.cart.deliver_amount || 0}}</span>
@@ -75,45 +75,69 @@
                 </div>
             </section>
 
-            <section class="pay_way">
-                <div class="invoice">
-                    <span>订单备注</span>
-                    <div class="more_type">
-                        <span class="ellipsis">{{remarkText||inputText? remarklist: '口味、偏好等'}}</span>
-                    </div>
-                    <el-dialog title="备注信息" :visible.sync="show_remark">
-                        <section v-if="remarkList.length">
-                            <header>快速备注</header>
-                            <ul>
-                                <li v-for="(item,index) in remarkList" :key="index">
-                                    {{item}}
-                                </li>
-                            </ul>
-                        </section>
-                        <el-input
-                            type="textarea"
-                            maxlength="60"
-                            show-word-limit
-                            :autosize="{ minRows: 2, maxRows: 2}"
-                            placeholder="请输入备注信息"
-                            v-model="remark_text"
-                            >
-                        </el-input>
-                        <div slot="footer" class="dialog-footer">
-                            <el-button @click="show_remark = false">取 消</el-button>
-                            <el-button type="primary" @click="show_remark = false">确 定</el-button>
-                        </div>
-                    </el-dialog>
-                    <el-button type="primary" @click="show_remark = true" size="mini">修改</el-button>
+            <div class="remark">
+                <span>订单备注</span>
+                <div class="more_type">
+                    <span class="ellipsis">{{remarkText||inputText? remarklist: '口味、偏好等'}}</span>
                 </div>
-                <router-link :to='{path: "/confirmOrder/remark", query: {id: checkoutData.cart.id, sig: checkoutData.sig}}'>111 </router-link>
-                <router-link :to="checkoutData.invoice.is_available? '/confirmOrder/invoice': ''" class="hongbo" :class="{support_is_available: checkoutData.invoice.is_available}">
-                    <span>发票抬头</span>
-                    <span>
-                        {{checkoutData.invoice.status_text}}
-                    </span>
-                </router-link>
-            </section>
+                <el-button type="primary" @click="show_remark = true" size="mini">修改</el-button>
+                <el-dialog title="备注信息" :visible.sync="show_remark">
+                    <section v-if="remarkList.length">
+                        <header>快速备注</header>
+                        <ul>
+                            <li v-for="(item,index) in remarkList" :key="index">
+                                {{item}}
+                            </li>
+                        </ul>
+                    </section>
+                    <el-input
+                        type="textarea"
+                        maxlength="60"
+                        show-word-limit
+                        :autosize="{ minRows: 2, maxRows: 2}"
+                        placeholder="请输入备注信息"
+                        v-model="remark_text"
+                        >
+                    </el-input>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="show_remark = false">取 消</el-button>
+                        <el-button type="primary" @click="show_remark = false">确 定</el-button>
+                    </div>
+                </el-dialog>
+            </div>
+            <div class="remark">
+                <span>发票抬头</span>
+                <span>
+                    {{checkoutData.invoice.status_text}}
+                </span>
+                <el-button type="primary" @click="show_invoice = true" size="mini">修改</el-button>
+                <el-dialog title="发票" :visible.sync="show_invoice">
+                    <!-- <section v-if="remarkList.length">
+                        <header>快速备注</header>
+                        <ul>
+                            <li v-for="(item,index) in remarkList" :key="index">
+                                {{item}}
+                            </li>
+                        </ul>
+                    </section> -->
+                    <!-- <el-input
+                        type="textarea"
+                        maxlength="60"
+                        show-word-limit
+                        :autosize="{ minRows: 2, maxRows: 2}"
+                        placeholder="请输入备注信息"
+                        v-model="remark_text"
+                        >
+                    </el-input> -->
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="show_invoice = false">取 消</el-button>
+                        <el-button type="primary" @click="show_invoice = false">确 定</el-button>
+                    </div>
+                </el-dialog> 
+            </div>
+
+            <router-link :to='{path: "/confirmOrder/remark", query: {id: checkoutData.cart.id, sig: checkoutData.sig}}'>修改</router-link>
+            <router-link :to="checkoutData.invoice.is_available? '/confirmOrder/invoice': ''" class="hongbo" :class="{support_is_available: checkoutData.invoice.is_available}">发票</router-link>
 
             <section class="confirm">
                 <p>待支付 ¥{{checkoutData.cart.total}}</p>
@@ -178,7 +202,9 @@
                 //备注对话框
                 show_remark:false,
                 remark_text: '',
-                remarkList: []
+                remarkList: [],
+                //发票
+                show_invoice: false
 
             }
         },
@@ -376,13 +402,13 @@
         margin: 0 auto;
     }
     .address_container{
-        min-height: 3.5rem;
-        @include fj;
+        display: flex;
         align-items: center;
-        padding: 0 0.6rem;
-        background: url(../../images/address_bottom.png) left bottom repeat-x;
+        padding: 16px;
+        border: 1px solid #CCCCCC;
+        border-radius: 5px;
+        margin-bottom: 16px;
         background-color: #fff;
-        background-size: auto .12rem;
         .address_empty_left{
             display: flex;
             align-items: center;
@@ -419,65 +445,59 @@
         }
     }
     .delivery_model{
-        border-left: .2rem solid $blue;
-        min-height: 4rem;
-        @include fj;
+        display: flex;
         align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        border: 1px solid #CCCCCC;
+        border-radius: 5px;
+        margin-bottom: 16px;
+        background-color: #fff;
         .deliver_text{
             @include sc(.8rem, #333);
             font-weight: bold;
-            padding-left: .3rem;
         }
         .deliver_time{
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            align-items: center;
             p:nth-of-type(1){
                 @include sc(.7rem, $blue);
             }
             p:nth-of-type(2){
                 @include sc(.5rem, #fff);
                 background-color: $blue;
-                width: 2.4rem;
-                margin-top: .5rem;
-                text-align: center;
-                border-radius: 0.12rem;
-                padding: .1rem;
+                border-radius: 3px;
+                margin-left: 16px;
             }
         }
     }
     .pay_way{
+        padding: 16px;
+        border: 1px solid #CCCCCC;
+        border-radius: 5px;
+        margin-bottom: 16px;
+        background-color: #fff;
         .header_style{
-            @include fj;
-            line-height: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             span:nth-of-type(1){
                 @include sc(.7rem, #666);
             }
             .more_type{
                 span:nth-of-type(1){
                     @include sc(.6rem, #aaa);
-                    width: 10rem;
                     display: inline-block;
                     text-align: right;
-                    vertical-align: middle;
-                }
-                svg{
-                    @include wh(.5rem, .5rem);
-                    fill: #ccc;
                 }
             }
         }
         .hongbo{
-            @include fj;
-            border-top: 0.025rem solid #f5f5f5;
+            display: flex;
+            justify-content: space-between;
             span{
                 @include sc(.6rem, #aaa);
                 line-height: 2rem;
-                svg{
-                    @include wh(.5rem, .5rem);
-                    vertical-align: middle;
-                    fill: #ccc;
-                }
             }
             span:nth-of-type(2){
                 color: #aaa;
@@ -490,13 +510,16 @@
         }
     }
     .food_list{
+        padding: 16px;
+        border: 1px solid #CCCCCC;
+        border-radius: 5px;
+        margin-bottom: 16px;
         background-color: #fff;
-        margin-top: .4rem;
         header{
-            padding: .7rem;
-            border-bottom: 0.025rem solid #f5f5f5;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f5f5f5;
             img{
-                @include wh(1.2rem, 1.2rem);
+                @include wh(20px, 20px);
                 vertical-align: middle;
             }
             span{
@@ -508,7 +531,7 @@
         }
         .food_item_style{
             @include fj;
-            line-height: 1.8rem;
+            line-height: 32px;
             padding: 0 12px;
             span,p{
                 @include sc(.65rem, #666);
@@ -517,8 +540,9 @@
                 width: 11rem;
             }
             .num_price{
-                flex: 1;
-                @include fj;
+                width: 50%;
+                display: flex;
+                justify-content: space-between;
                 align-items: center;
                 span:nth-of-type(1){
                     color: #f60;
@@ -528,9 +552,19 @@
         .total_price{
             border-top: 1px solid #f5f5f5;
             text-align: end;
-            line-height: 1.8rem;
+            line-height: 32px;
             padding: 0 12px;
         }
+    }
+    .remark {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border: 1px solid #CCCCCC;
+        border-radius: 5px;
+        margin-bottom: 16px;
+        background-color: #fff;
     }
     .confirm {
         display: flex;

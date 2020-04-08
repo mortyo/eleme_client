@@ -3,11 +3,13 @@
         <head-top head-title="订单备注" go-back='true'></head-top>
 
         <section v-if="!showLoading">
-            <section class="quick_remark" v-if="remarkList.remarks.length">
+            <section class="quick_remark" v-if="remarkList.length">
                 <header class="header_style">快速备注</header>
                 <ul class="remark_arr_list_ul">
-                    <li class="remark_arr_list_li" v-for="(item,index) in remarkList.remarks" :key="index">
-                        <span :class="{first: remarkIndex == 0, last: remarkIndex == item.length - 1, choosed: remarkText[index]&&(remarkText[index][0] == remarkIndex)}" class="remark_item_li" v-for="(remarkTtem, remarkIndex) in item" :key="remarkIndex" @click="chooseRemark(index, remarkIndex, remarkTtem)">{{remarkTtem}}</span>
+                    <li v-for="(item,index) in remarkList" :key="index">
+                        <span :class="{first: remarkIndex == 0, last: remarkIndex == item.length - 1,choosed: remarkText[index]&&(remarkText[index][0] == remarkIndex)}" v-for="(remarkTtem, remarkIndex) in item" :key="remarkIndex" @click="chooseRemark(index, remarkIndex, remarkTtem)">
+                            {{remarkTtem}}
+                        </span>
                     </li>
                 </ul>
             </section>
@@ -58,7 +60,8 @@
             //初始化信息
             async initData(){
                 let res_remarkList = await getRemark(this.id, this.sig);
-                this.remarkList = res_remarkList.data;
+                this.remarkList = res_remarkList.data.remarks;
+                console.log(this.remarkList)
                 this.showLoading = false;
             },
             //选择备注
