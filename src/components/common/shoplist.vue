@@ -58,7 +58,7 @@
 <script>
 
 import {mapState} from 'vuex'
-import {shopList} from 'src/service/getData'
+import {shopList} from 'src/api/getData'
 import {imgBaseUrl} from 'src/config/env'
 import loading from './loading'
 

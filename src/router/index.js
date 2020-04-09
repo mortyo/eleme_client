@@ -2,33 +2,33 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import {routerMode} from '../config/env'
 
-const home = r => require.ensure([], () => r(require('../page/home/home')), 'home')
-const msite = r => require.ensure([], () => r(require('../page/msite/msite')), 'msite')
-const food = r => require.ensure([], () => r(require('../page/food/food')), 'food')
+const home = r => require.ensure([], () => r(require('../views/home/home')), 'home')
+const msite = r => require.ensure([], () => r(require('../views/msite/msite')), 'msite')
+const food = r => require.ensure([], () => r(require('../views/food/food')), 'food')
 //商店
-const shop = r => require.ensure([], () => r(require('../page/shop/shop')), 'shop')
-const shopDetail = r => require.ensure([], () => r(require('../page/shop/children/shopDetail')), 'shopDetail')
-const shopSafe = r => require.ensure([], () => r(require('../page/shop/children/children/shopSafe')), 'shopSafe')
-const foodDetail = r => require.ensure([], () => r(require('../page/shop/children/foodDetail')), 'foodDetail')
+const shop = r => require.ensure([], () => r(require('../views/shop/shop')), 'shop')
+const shopDetail = r => require.ensure([], () => r(require('../views/shop/children/shopDetail')), 'shopDetail')
+const shopSafe = r => require.ensure([], () => r(require('../views/shop/children/children/shopSafe')), 'shopSafe')
+const foodDetail = r => require.ensure([], () => r(require('../views/shop/children/foodDetail')), 'foodDetail')
 //确认订单
-const confirmOrder = r => require.ensure([], () => r(require('../page/confirmOrder/confirmOrder')), 'confirmOrder')
-const chooseAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/chooseAddress')), 'chooseAddress')
-const addAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/children/addAddress')), 'addAddress')
-const searchAddress = r => require.ensure([], () => r(require('../page/confirmOrder/children/children/children/searchAddress')), 'searchAddress')
+const confirmOrder = r => require.ensure([], () => r(require('../views/confirmOrder/confirmOrder')), 'confirmOrder')
+const chooseAddress = r => require.ensure([], () => r(require('../views/confirmOrder/children/chooseAddress')), 'chooseAddress')
+const addAddress = r => require.ensure([], () => r(require('../views/confirmOrder/children/children/addAddress')), 'addAddress')
+const searchAddress = r => require.ensure([], () => r(require('../views/confirmOrder/children/children/children/searchAddress')), 'searchAddress')
 
-const remark = r => require.ensure([], () => r(require('../page/confirmOrder/children/remark')), 'remark')
-const invoice = r => require.ensure([], () => r(require('../page/confirmOrder/children/invoice')), 'invoice')
-const payment = r => require.ensure([], () => r(require('../page/confirmOrder/children/payment')), 'payment')
+const remark = r => require.ensure([], () => r(require('../views/confirmOrder/children/remark')), 'remark')
+const invoice = r => require.ensure([], () => r(require('../views/confirmOrder/children/invoice')), 'invoice')
+const payment = r => require.ensure([], () => r(require('../views/confirmOrder/children/payment')), 'payment')
 
 //搜索
-const search = r => require.ensure([], () => r(require('../page/search/search')), 'search')
+const search = r => require.ensure([], () => r(require('../views/search/search')), 'search')
 //登录
-const login = r => require.ensure([], () => r(require('../page/login/login')), 'login')
-const forget = r => require.ensure([], () => r(require('../page/forget/forget')), 'forget')
+const login = r => require.ensure([], () => r(require('../views/login/login')), 'login')
+const forget = r => require.ensure([], () => r(require('../views/forget/forget')), 'forget')
 //我的
-const profile = r => require.ensure([], () => r(require('../page/profile/profile')), 'profile')
-const info = r => require.ensure([], () => r(require('../page/profile/children/info')), 'info')
-const orderDetail = r => require.ensure([], () => r(require('../page/profile/children/orderDetail')), 'orderDetail')
+const profile = r => require.ensure([], () => r(require('../views/profile/profile')), 'profile')
+const info = r => require.ensure([], () => r(require('../views/profile/children/info')), 'info')
+const orderDetail = r => require.ensure([], () => r(require('../views/profile/children/orderDetail')), 'orderDetail')
 
 const routes = [
     //空路径直接导航到/msite

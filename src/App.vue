@@ -31,14 +31,8 @@
 				<el-button @click="centerDialogVisible = false" round>取 消</el-button>
 			</span>
 		</el-dialog>
-
-		<transition name="router-fade" mode="out-in">
-			<keep-alive>
-			    <router-view v-if="$route.meta.keepAlive"></router-view>
-			</keep-alive>
-    	</transition>
     	<transition name="router-fade" mode="out-in">
-			<router-view v-if="!$route.meta.keepAlive"></router-view>
+			<router-view></router-view>
 		</transition>
     </div>
 </template>
@@ -47,7 +41,7 @@
 import { mapState,mapActions,mapMutations } from 'vuex'
 import { imgBaseUrl } from 'src/config/env'
 import { removeStore } from 'src/config/mUtils'
-import { signout } from 'src/service/getData'
+import { signout } from 'src/api/getData'
 export default {
 	data(){
 		return{
@@ -119,10 +113,8 @@ export default {
 	@import './style/common';
 	@import './style/mixin';
 	#app {
-		font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
 		font-size: 14px;
 		line-height: 1.5;
-    	color: #24292e;
 	}
     .el-menu-demo {
         display: flex;

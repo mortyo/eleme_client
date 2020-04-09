@@ -1,7 +1,7 @@
 import {
 	getUser,
 	getAddressList
-} from '../service/getData'
+} from '../api/getData'
 import {
 	GET_USERINFO,
 	SAVE_ADDRESS
