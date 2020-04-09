@@ -1,6 +1,5 @@
  <template>
     <div class="rating_page">
-        <head-top head-title="在线支付" go-back='true'></head-top>
 
         <div class="container">
             <section class="show_time_amount">
@@ -36,17 +35,13 @@
                 </section>
             </section>
             <el-button type="primary" @click="confrimPay">确认支付</el-button>
-            
-            <alert-tip v-if="showAlert" @closeTip="closeTipFun" :alertText="alertText"></alert-tip>
         </div>
     </div>
 </template>
 
 <script>
-    import headTop from 'src/components/header/head'
     import {mapState, mapMutations} from 'vuex'
     import {payRequest} from 'src/service/getData'
-    import alertTip from 'src/components/common/alertTip'
 
     export default {
       data(){
@@ -58,10 +53,6 @@
                 countNum: 900, //倒计时15分钟
                 gotoOrders: false, //去付款
             }
-        },
-        components: {
-            headTop,
-            alertTip,
         },
         created(){
             this.initData();

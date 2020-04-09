@@ -31,7 +31,7 @@ const info = r => require.ensure([], () => r(require('../page/profile/children/i
 const orderDetail = r => require.ensure([], () => r(require('../page/profile/children/orderDetail')), 'orderDetail')
 
 const routes = [
-    //空路径直接导航到/home
+    //空路径直接导航到/msite
     {
         path: '',
         redirect: '/home'
@@ -45,7 +45,7 @@ const routes = [
     {
         path: '/msite',
         component: msite,
-        meta: { keepAlive: true },
+        // meta: { keepAlive: true },
     },
     //特色商铺列表页
     {

@@ -17,8 +17,8 @@
         <!-- 搜索结果 -->
         <ul class="getpois_ul">
             <li v-for="(item, index) in placelist" @click='nextpage(index,item.geohash)' :key="index">
-                <h4 class="pois_name ellipsis">{{item.name}}</h4>
-                <p class="pois_address ellipsis">{{item.address}}</p>
+                <h4 class="pois_name">{{item.name}}</h4>
+                <p class="pois_address">{{item.address}}</p>
             </li>
         </ul>
         <div v-if="placeNone" class="search_none_place" >很抱歉！无搜索结果</div>
@@ -117,7 +117,6 @@ export default {
         },
         //选中后处理
         handleSelect(item) {
-            console.log(item);
             this.$router.push({path:'/msite', query:{geohash:item.geohash}})
         },
         handleIconClick(ev) {
@@ -138,26 +137,22 @@ export default {
         margin-left: -0.5rem;
     }
     .container {
+        margin: 0 auto;
+        margin-top: 24px;
+        width: 600px;
         .city_form{
-            text-align: center;
             .tip {
-                margin: 0 25%;
-                text-align: left;
                 span {
                     color: #409EFF;
                 }
             }
             .search{
-                width: 50%;
-                text-align: left;
-                margin: initial;
-                padding: 0;
+                width: 100%;
             }
             .my-autocomplete {
                 li {
                     line-height: normal;
                     padding: 7px;
-
                     .name {
                     text-overflow: ellipsis;
                     overflow: hidden;
@@ -166,7 +161,6 @@ export default {
                     font-size: 12px;
                     color: #b4b4b4;
                     }
-
                     .highlighted .addr {
                     color: #ddd;
                     }
@@ -175,13 +169,12 @@ export default {
         }
         .getpois_ul{
             li{
-                margin: 0 25%;
                 padding-top: 21px;
                 border-bottom: 1px solid $bc;
                 .pois_name{
                     margin: 0 auto 0.35rem;
                     width: 90%;
-                @include sc(0.65rem, #333);
+                    @include sc(0.65rem, #333);
                 }
                 .pois_address{
                     width: 90%;

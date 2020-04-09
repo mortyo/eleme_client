@@ -1,17 +1,22 @@
  <template>
     <div class="rating_page">
-        <head-top head-title="订单备注" go-back='true'></head-top>
-
         <section v-if="!showLoading">
             <section class="quick_remark" v-if="remarkList.length">
                 <header class="header_style">快速备注</header>
                 <ul class="remark_arr_list_ul">
                     <li v-for="(item,index) in remarkList" :key="index">
-                        <span :class="{first: remarkIndex == 0, last: remarkIndex == item.length - 1,choosed: remarkText[index]&&(remarkText[index][0] == remarkIndex)}" v-for="(remarkTtem, remarkIndex) in item" :key="remarkIndex" @click="chooseRemark(index, remarkIndex, remarkTtem)">
+                        <span  v-for="(remarkTtem, remarkIndex) in item" :key="remarkIndex" :class="{first: remarkIndex == 0, last: remarkIndex == item.length - 1,choosed: remarkText[index]&&(remarkText[index][0] == remarkIndex)}" @click="chooseRemark(index, remarkIndex, remarkTtem)">
                             {{remarkTtem}}
                         </span>
+                        <div v-if="item.length == 1">
+                            <span v-for="remark_item in item" :key="remark_item">{{remark_item}}</span>
+                        </div>
+                        <div v-else-if="item.length>1">
+                            <span v-for="remark_item in item" :key="remark_item">{{remark_item}}</span>
+                        </div>
                     </li>
                 </ul>
+                {{remarkText}}
             </section>
             <section class="input_remark quick_remark">
                 <header class="header_style">其他备注</header>
@@ -24,7 +29,6 @@
 </template>
 
 <script>
-    import headTop from 'src/components/header/head'
     import {getRemark} from 'src/service/getData'
     import loading from 'src/components/common/loading'
     import {mapMutations} from 'vuex'
@@ -49,7 +53,6 @@
         },
         mixins: [],
         components: {
-            headTop,
             loading,
         },
         props:[],
@@ -116,13 +119,14 @@
                     border-left: 0;
                 }
                 .first{
-                    border-left: 0.025rem solid #3190e8;
-                    border-top-left-radius: .2rem;
-                    border-bottom-left-radius: .2rem;
+                    border-left: 1px solid #3190e8;
+                    border-radius: .2rem;
+                    background: blue;
                 }
                 .last{
                     border-top-right-radius: .2rem;
                     border-bottom-right-radius: .2rem;
+                    background: cadetblue;
                 }
                 .choosed{
                     color: #fff;

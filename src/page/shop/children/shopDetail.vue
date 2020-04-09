@@ -1,6 +1,5 @@
  <template>
 	<div class="rating_page">
-        <head-top head-title="商家详情" go-back='true'></head-top>
         <div class="container">
             <section class="activities_container">
                 <header>活动与属性</header>
@@ -79,9 +78,7 @@
 </template>
 
 <script>
-	import headTop from 'src/components/header/head'
     import {mapState} from 'vuex'
-    import {getImgPath} from 'src/components/common/mixin'
     import {imgBaseUrl} from 'src/config/env'
 
     export default {
@@ -100,10 +97,6 @@
                 'shopDetail'
             ]),
         },
-        components: {
-        	headTop,
-        },
-        mixins:[getImgPath],
         methods: {
             showLicenseImg(img){
                 this.licenseImg = img;

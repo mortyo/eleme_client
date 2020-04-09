@@ -1,6 +1,5 @@
  <template>
     <div class="rating_page">
-        <head-top head-title="选择发票抬头" go-back='true'></head-top>
         <section class="choose_invoice">
         	<span>不需要开发票</span>
         	<svg @click="chooseInvoice" :class="{choosed: invoice}">
@@ -12,7 +11,6 @@
 </template>
 
 <script>
-    import headTop from 'src/components/header/head'
     import {mapMutations} from 'vuex'
 
     export default {
@@ -20,9 +18,6 @@
             return{
                	invoice: false, //是否需要发票
             }
-        },
-        components: {
-            headTop,
         },
         props:[],
         methods: {

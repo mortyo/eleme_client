@@ -190,6 +190,8 @@ export default {
                 getHongbaoNum(this.userInfo.user_id).then((res) => {
                     this.hongbaoList = res.data
                 })
+            }else{
+                this.$router.push('/login')
             }
         },
         //订单显示详情页

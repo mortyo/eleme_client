@@ -2,7 +2,7 @@
     <div>
 		<div class="address">
 			<p>当前地址：
-				<span class="msite_title">{{msiteTitle}} </span>
+				<span class="msite_title">{{address_show}} </span>
 				<router-link to="/home" class="change">&lt;地址不对？点击切换&gt;</router-link>
 			</p>
 		</div>
@@ -21,7 +21,7 @@
 <script>
 import shopList from 'src/components/common/shoplist'
 import {mapMutations} from 'vuex'
-import {msiteAddress, msiteFoodTypes} from 'src/service/getData'
+import { msiteAddress, msiteFoodTypes } from 'src/service/getData'
 
 export default {
 	components: {
@@ -30,32 +30,35 @@ export default {
 	data(){
         return {
         	geohash: '', // 页面传递过来的地址geohash
-            msiteTitle: '请选择地址...', // msite页面头部标题
+            address_show: '请选择地址...', // msite页面头部标题
             foodTypes: [], // 食品分类列表
             hasGetData: false, //是否已经获取地理位置数据，成功之后再获取商铺列表信息
             imgBaseUrl: 'https://fuss10.elemecdn.com', //图片域名地址
         }
-    },
-    async beforeMount(){
+	},
+    beforeMount(){
 		if (!this.$route.query.geohash) {
 			this.$router.push({path:'/home'})
 		}else{
 			this.geohash = this.$route.query.geohash
-		}
-		//保存geohash 到vuex
-		this.SAVE_GEOHASH(this.geohash);
-    	//获取位置信息
-    	let res = await msiteAddress(this.geohash);
-		this.msiteTitle = res.data.name;
-    	// 记录当前经度纬度
-    	this.RECORD_ADDRESS(res.data);
-		this.hasGetData = true;
+			//保存geohash 到vuex
+			this.SAVE_GEOHASH(this.geohash);
+			//获取位置信息
+			msiteAddress(this.geohash).then((res) => {
+				this.address_show = res.data.name;
+				console.log(this.address_show)
+				// 记录当前经度纬度
+				this.RECORD_ADDRESS(res.data);
+				this.hasGetData = true;
+			})
+		}	
     },
     mounted(){
         //获取导航食品类型列表
        	msiteFoodTypes().then(res => {
 			this.foodTypes = res.data;
-        })
+		})
+
     },
     methods: {
     	...mapMutations([

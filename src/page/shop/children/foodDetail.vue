@@ -1,7 +1,5 @@
  <template>
 	<div class="rating_page">
-        <head-top :head-title="name" go-back='true'></head-top>
-
         <div class="container">
             <section class="header_img">
                 <img :src="imgBaseUrl + image_path" class="food_img">
@@ -32,9 +30,6 @@
 </template>
 
 <script>
-	import headTop from 'src/components/header/head'
-    import {getImgPath} from 'src/components/common/mixin'
-
     import buyCart from 'src/components/common/buyCart'
     import {imgBaseUrl} from 'src/config/env'
 
@@ -64,9 +59,7 @@
             this.foods = this.$route.query.foods;
             this.shopId = this.$route.query.shopId;
         },
-        mixins: [getImgPath],
         components: {
-        	headTop,
             buyCart,
         },
         props:[],

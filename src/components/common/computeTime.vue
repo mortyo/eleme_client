@@ -2,13 +2,11 @@
     <div class="page">
         <span class="rem_time" style="color: orange;border-width: 1px;border-style: solid;border-color: orange;" @click="gotoPay">
 	       {{remaining}}
-        </span>
-        <alert-tip v-if="showAlert" @closeTip="showAlert = false" :alertText="alertText"></alert-tip>  
+        </span> 
     </div>
 </template>
 
 <script>
-    import alertTip from 'src/components/common/alertTip'
 
     export default {
     	data(){
@@ -23,9 +21,6 @@
             this.remainingTime();
         },
         props: ['time'],
-        components: {
-            alertTip,
-        },
         methods: {
             closeTip(){
                 this.$emit('closeTip')

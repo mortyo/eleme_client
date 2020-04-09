@@ -254,7 +254,6 @@
 
     import loading from 'src/components/common/loading'
     import buyCart from 'src/components/common/buyCart'
-    import { loadMore } from 'src/components/common/mixin'
     import {imgBaseUrl} from 'src/config/env'
     import BScroll from 'better-scroll'
 
@@ -310,7 +309,6 @@
         beforeDestroy(){
             // this.foodScroll.removeEventListener('scroll', )
         },
-        mixins: [loadMore],
         components: {
             loading,
             buyCart

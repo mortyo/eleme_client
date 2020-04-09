@@ -110,30 +110,7 @@
                 <span>
                     {{checkoutData.invoice.status_text}}
                 </span>
-                <el-button type="primary" @click="show_invoice = true" size="mini">修改</el-button>
-                <el-dialog title="发票" :visible.sync="show_invoice">
-                    <!-- <section v-if="remarkList.length">
-                        <header>快速备注</header>
-                        <ul>
-                            <li v-for="(item,index) in remarkList" :key="index">
-                                {{item}}
-                            </li>
-                        </ul>
-                    </section> -->
-                    <!-- <el-input
-                        type="textarea"
-                        maxlength="60"
-                        show-word-limit
-                        :autosize="{ minRows: 2, maxRows: 2}"
-                        placeholder="请输入备注信息"
-                        v-model="remark_text"
-                        >
-                    </el-input> -->
-                    <div slot="footer" class="dialog-footer">
-                        <el-button @click="show_invoice = false">取 消</el-button>
-                        <el-button type="primary" @click="show_invoice = false">确 定</el-button>
-                    </div>
-                </el-dialog> 
+                <el-switch v-model="changed_invoice" @change="changeInvoice()"></el-switch>
             </div>
 
             <router-link :to='{path: "/confirmOrder/remark", query: {id: checkoutData.cart.id, sig: checkoutData.sig}}'>修改</router-link>
@@ -163,8 +140,6 @@
                 </div>
             </transition>
         </section>
-
-        <alert-tip v-if="showAlert" @closeTip="showAlert = false" :alertText="alertText"></alert-tip>
         <loading v-if="showLoading"></loading>
         <transition name="router-slid" mode="out-in">
             <router-view></router-view>
@@ -174,19 +149,18 @@
 
 <script>
     import { mapState, mapMutations } from 'vuex'
-    import alertTip from 'src/components/common/alertTip'
     import loading from 'src/components/common/loading'
     import {
         checkout, 
         placeOrders, 
         getAddressList,
         getRemark,  //备注
-
     } from 'src/service/getData'
 
     import {imgBaseUrl} from 'src/config/env'
 
     export default {
+        components: { loading },
         data(){
             return {
                 geohash: '', //geohash位置信息
@@ -203,30 +177,9 @@
                 show_remark:false,
                 remark_text: '',
                 remarkList: [],
-                //发票
-                show_invoice: false
-
+                //发票，true需要，false不需要
+                changed_invoice: ''
             }
-        },
-        created(){
-            //获取上个页面传递过来的geohash值
-            this.geohash = this.$route.query.geohash;
-            //获取上个页面传递过来的shopid值
-            this.shopId = this.$route.query.shopId;
-            this.INIT_BUYCART();
-            this.SAVE_SHOPID(this.shopId);
-            //获取当前商铺购物车信息
-            this.shopCart = this.cartList[this.shopId];
-        },
-        mounted(){
-            if (this.geohash) {
-                this.initData();
-                this.SAVE_GEOHASH(this.geohash);
-            }
-        },
-        components: {
-            alertTip,
-            loading,
         },
         computed: {
             ...mapState([
@@ -248,6 +201,22 @@
                 }
             },
         },
+        created(){
+            //获取上个页面传递过来的geohash值
+            this.geohash = this.$route.query.geohash;
+            //获取上个页面传递过来的shopid值
+            this.shopId = this.$route.query.shopId;
+            this.INIT_BUYCART();
+            this.SAVE_SHOPID(this.shopId);
+            //获取当前商铺购物车信息
+            this.shopCart = this.cartList[this.shopId];
+        },
+        mounted(){
+            if (this.geohash) {
+                this.initData();
+                this.SAVE_GEOHASH(this.geohash);
+            }
+        },
         methods: {
             ...mapMutations([
                 'INIT_BUYCART', 
@@ -259,6 +228,7 @@
                 'ORDER_SUCCESS', 
                 'SAVE_SHOPID',
                 'CONFIRM_REMARK',   //确认备注信息
+                'CONFIRM_INVOICE',  //确认发票
             ]),
             //初始化数据
             async initData(){
@@ -295,8 +265,7 @@
                         arr.forEach((remark) => {
                             this.remarkList.push(remark)
                         })
-                    })
-                    console.log(this.remarkList)   
+                    })  
                 });
                 this.showLoading = false;
             },
@@ -329,13 +298,18 @@
                 }
             },
             //确认备注信息
-            chooseRemark(index, remarkIndex, text){
+            // chooseRemark(index, remarkIndex, text){
 
-            },
-            confirmRemark(){
-                this.CONFIRM_REMARK({remarkText: this.remarkText, inputText: this.inputText});
-            },
+            // },
+            // confirmRemark(){
+            //     this.CONFIRM_REMARK({remarkText: this.remarkText, inputText: this.inputText});
+            // },
             //确认订单
+            //改变发票触发事件
+            changeInvoice(){
+                this.changed_invoice = !this.changed_invoice
+            	this.CONFIRM_INVOICE(this.changed_invoice);
+            },
             async confrimOrder(){
                 //用户未登录时弹出提示框
                 if (!(this.userInfo && this.userInfo.user_id)) {
@@ -367,8 +341,15 @@
                     sig: this.checkoutData.sig,
                 });
                 //发送订单信息
-                placeOrders(this.userInfo.user_id, this.checkoutData.cart.id, this.choosedAddress.id, this.remarklist, this.checkoutData.cart.groups, this.geohash, this.checkoutData.sig).then((res) => {
-                    console.log(res)
+                placeOrders(
+                    this.userInfo.user_id, 
+                    this.checkoutData.cart.id, 
+                    this.choosedAddress.id, 
+                    this.remarklist, 
+                    this.checkoutData.cart.groups, 
+                    this.geohash, 
+                    this.checkoutData.sig
+                ).then((res) => {
                     //第一次下单的手机号需要进行验证，否则直接下单成功
                     if (res.need_validation) {
                         this.NEED_VALIDATION(res.data);

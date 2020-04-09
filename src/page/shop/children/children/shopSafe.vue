@@ -1,6 +1,5 @@
  <template>
 	<div class="safe_shop">
-        <head-top head-title="食品监督安全公示" go-back='true'></head-top>
         <section id="scroll_section" class="scroll_container">
             <section>
                 
@@ -102,8 +101,6 @@
 
 <script>
     import {mapState} from 'vuex'
-    import headTop from 'src/components/header/head'
-    import {getImgPath} from 'src/components/common/mixin'
     import BScroll from 'better-scroll'
     import { 
         // localapi, 
@@ -135,10 +132,6 @@
                 'shopDetail'
             ]),
         },
-        components: {
-        	headTop,
-        },
-        mixins:[getImgPath],
         methods: {
             showLicenseImg(img){
                 this.licenseImg = img;
