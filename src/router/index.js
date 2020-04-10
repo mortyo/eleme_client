@@ -127,19 +127,19 @@ Vue.use(VueRouter)
 const router = new VueRouter({
 	routes,
 	mode: routerMode,
-    strict: process.env.NODE_ENV !== 'production',
+    strict: process.env.NODE_ENV !== 'production',  //在严格模式下，无论何时发生了状态变更且不是由 mutation 函数引起的，将会抛出错误。这能保证所有的状态变更都能被调试工具跟踪到
     // 路选项，滑动行为
-	scrollBehavior (to, from, savedPosition) {
-        //return 期望滚动到哪个的位置
-	    if (savedPosition) {
-		    return { x: 0,y: 0 }  //前进后退时返回顶部
-		} else {
-			if (from.meta.keepAlive) {
-                from.meta.savedPosition = document.body.scrollTop;  //Element.scrollTop 属性可以获取或设置一个元素的内容垂直滚动的像素数
-			}
-		    return { x: 0, y: to.meta.savedPosition || 0 }
-        }
-	}
+	// scrollBehavior (to, from, savedPosition) {
+    //     //return 期望滚动到哪个的位置
+	//     if (savedPosition) {
+	// 	    return { x: 0,y: 0 }  //前进后退时返回顶部
+	// 	} else {
+	// 		if (from.meta.keepAlive) {
+    //             from.meta.savedPosition = document.body.scrollTop;  //Element.scrollTop 属性可以获取或设置一个元素的内容垂直滚动的像素数
+	// 		}
+	// 	    return { x: 0, y: to.meta.savedPosition || 0 }
+    //     }
+	// }
 })
 
 export default router

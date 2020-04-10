@@ -17,7 +17,7 @@ export const cityGuess = () => axios.get('https://elm.cangdu.org/v1/cities', {
  * 2-获取当前所在城市
  */
 
-export const currentcity = number => axios.get('/v1/cities/'+number)
+// export const currentcity = number => axios.get('/v1/cities/'+number)
 
 
 /**
@@ -222,12 +222,12 @@ export const getAddress = (id, sig) => axios.get('/v1/carts/' + id + '/addresses
  * 20-搜索地址
  */
 
-export const searchNearby = keyword => axios.get('/v1/pois', {
-	params: {
-		type: 'nearby',
-		keyword
-	}
-});
+// export const searchNearby = keyword => axios.get('/v1/pois', {
+// 	params: {
+// 		type: 'nearby',
+// 		keyword
+// 	}
+// });
 
 
 /**
@@ -268,10 +268,10 @@ export const placeOrders = (user_id, cart_id, address_id, description, entities,
  * 23-重新发送订单验证码-post
  */
 
-export const rePostVerify = (cart_id, sig, type) => axios.post('/v1/carts/' + cart_id + '/verify_code', {
-	sig,
-	type,
-});
+// export const rePostVerify = (cart_id, sig, type) => axios.post('/v1/carts/' + cart_id + '/verify_code', {
+// 	sig,
+// 	type,
+// });
 
 
 
@@ -279,28 +279,28 @@ export const rePostVerify = (cart_id, sig, type) => axios.post('/v1/carts/' + ca
  * 24-下订单-post
  */
 
-export const validateOrders = ({
-	user_id,
-	cart_id,
-	address_id,
-	description,
-	entities,
-	geohash,
-	sig,
-	validation_code,
-	validation_token
-}) => axios.post('/v1/users/' + user_id + '/carts/' + cart_id + '/orders', {
-	address_id,
-	come_from: "mobile_web",
-	deliver_time: "",
-	description,
-	entities,
-	geohash,
-	paymethod_id: 1,
-	sig,
-	validation_code,
-	validation_token,
-});
+// export const validateOrders = ({
+// 	user_id,
+// 	cart_id,
+// 	address_id,
+// 	description,
+// 	entities,
+// 	geohash,
+// 	sig,
+// 	validation_code,
+// 	validation_token
+// }) => axios.post('/v1/users/' + user_id + '/carts/' + cart_id + '/orders', {
+// 	address_id,
+// 	come_from: "mobile_web",
+// 	deliver_time: "",
+// 	description,
+// 	entities,
+// 	geohash,
+// 	paymethod_id: 1,
+// 	sig,
+// 	validation_code,
+// 	validation_token,
+// });
 
 
 /**
@@ -323,7 +323,7 @@ export const payRequest = (merchantOrderNo, userId) => axios.get('/payapi/paymen
  * 26-获取服务中心信息
  */
 
-export const getService = () => axios.get('/v3/profile/explain');
+// export const getService = () => axios.get('/v3/profile/explain');
 
 
 
@@ -331,10 +331,10 @@ export const getService = () => axios.get('/v3/profile/explain');
 * 27-兑换会员卡-post
 */
 
-export const vipCart = (id, number, password) => axios.post('/member/v1/users/' + id + '/delivery_card/physical_card/bind',{
-	number,
-	password
-})
+// export const vipCart = (id, number, password) => axios.post('/member/v1/users/' + id + '/delivery_card/physical_card/bind',{
+// 	number,
+// 	password
+// })
 
 
 
@@ -351,17 +351,17 @@ export const getHongbaoNum = id => axios.get('/promotion/v2/users/' + id + '/hon
 */
 
 
-export const getExpired = id => axios.get('/promotion/v2/users/' + id + '/expired_hongbaos?limit=20&offset=0');
+// export const getExpired = id => axios.get('/promotion/v2/users/' + id + '/expired_hongbaos?limit=20&offset=0');
 
 
 /**
  * 30-兑换红包-post
 */
 
-export const exChangeHongbao = (id, exchange_code, captcha_code) => axios.post('/v1/users/' + id + '/hongbao/exchange',{
-	exchange_code,
-	captcha_code,
-});
+// export const exChangeHongbao = (id, exchange_code, captcha_code) => axios.post('/v1/users/' + id + '/hongbao/exchange',{
+// 	exchange_code,
+// 	captcha_code,
+// });
 
 
 /**
@@ -404,10 +404,10 @@ export const getAddressList = (user_id) => axios.get('/v1/users/'+user_id+'/addr
 *35-个人中心里搜索地址
 */
 
-export const getSearchAddress = (keyword) => fetch('v1/pois',{
-	keyword:keyword,
-	type:'nearby'
-})
+// export const getSearchAddress = (keyword) => fetch('v1/pois',{
+// 	keyword:keyword,
+// 	type:'nearby'
+// })
 
 /**
 * 36-删除地址
