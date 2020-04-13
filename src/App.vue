@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { getStore } from './config/mUtils';
 import { mapState,mapActions,mapMutations } from 'vuex'
 import { imgBaseUrl } from 'src/config/env'
 import { removeStore } from 'src/config/mUtils'
@@ -59,10 +60,12 @@ export default {
 		]),
 	},
 	async mounted(){
-		//获取用户信息
-		await this.getUserInfo();
-		// 根据state.userInfo.user_id获取并保存收货地址到state
-		this.saveAddress();
+		if(getStore('user_id')) {
+			//获取用户信息
+			await this.getUserInfo();
+			// 根据state.userInfo.user_id获取并保存收货地址到state
+			this.saveAddress();
+		}
 	},
 	methods: {
 		...mapMutations([
