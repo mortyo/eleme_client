@@ -19,6 +19,19 @@
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-map-location"></i> 收货地址</span>
                 <el-button @click="add_address_btn()" type="primary"  size="mini" style="margin-bottom:4px">增加地址</el-button>
+                    <!-- 添加地址对话框 -->
+                    <el-dialog title="添加地址" :visible.sync="add_address_show" :modal-append-to-body="false">
+                        <el-form>
+                            收货人<el-input v-model="username" placeholder="名字"></el-input>
+                            手机号码<el-input v-model="phone" placeholder="手机号码"></el-input>
+                            地址<el-input v-model="addAddress" placeholder="地址"></el-input>
+                            详细地址<el-input v-model="detailedaddress" placeholder="详细地址"></el-input>                
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="add_address_show = false">取 消</el-button>
+                            <el-button type="primary" @click="add_address_show = false;add_address()">确 定</el-button>
+                        </div>
+                    </el-dialog>
                 <ul>
                     <li v-for="item in addressList" :key="item.id" class="addresslist">
                         <div>
@@ -51,26 +64,12 @@
                 </form>
             </el-tab-pane>
         </el-tabs>
-        <!-- 添加地址对话框 -->
-        <el-dialog title="添加地址" :visible.sync="add_address_show" :modal-append-to-body="false">
-            <el-form>
-                收货人<el-input v-model="username" placeholder="名字"></el-input>
-                手机号码<el-input v-model="tel" placeholder="手机号码"></el-input>
-                地址<el-input v-model="addAddress" placeholder="地址"></el-input>
-                详细地址<el-input v-model="detailedaddress" placeholder="详细地址"></el-input>                
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="add_address_show = false">取 消</el-button>
-                <el-button type="primary" @click="add_address_show = false;add_address()">确 定</el-button>
-            </div>
-        </el-dialog>
     </div>
 </template>
 
 <script>
     import {mapState,mapMutations,mapActions} from 'vuex'
     import { 
-        signout,
         changeAvatar, //改变头像
         getAddressList,  //获取收货地址
         postAddAddress,  //增加地址
@@ -92,8 +91,8 @@
                 addressList: [],  
                 add_address_show:false,
                 edit_address_show:false,
-                tel: '',
-                standbytel:'', //备用手机号
+                phone: '',
+                phone_bk:'', //备用手机号
                 addAddress: '',
                 detailedaddress: '',
                 message:'', //信息
@@ -161,15 +160,14 @@
             add_address(){
                 postAddAddress(
                     this.userInfo.user_id, 
-                    this.detailedaddress, 
                     this.addAddress, 
-                    this.geohash, 
+                    this.detailedaddress, 
+                    this.geohash='geohash', 
                     this.username,
-                    this.message, 
-                    this.tel, 
-                    this.standbytel, 
+                    this.phone, 
+                    this.phone_bk, 
                     0, 1, '公司', 4).then((res) => {
-                    alert('添加地址这个接口有问题(っ °Д °;)っ')
+                        console.log(res.data)
                 })
             },
             edit_address(){

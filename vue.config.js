@@ -8,7 +8,7 @@ module.exports = {
     outputDir: '../eleme_server/public',
     //代理服务器
     devServer: {
-        proxy: process.env.VUE_APP_PROXY,
+        proxy: 'http://localhost:8001',
     },
     //路径别名
     chainWebpack: (config) => {

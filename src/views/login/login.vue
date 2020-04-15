@@ -58,9 +58,9 @@
             this.getCaptchaCode();
         },
         beforeMount(){
-            if(getStore('user_id')){
-                this.$router.push('/profile')   //当有用户登录时跳转到profile页面
-            }
+            // if(getStore('user_id')){
+            //     this.$router.push('/profile')   //当有用户登录时跳转到profile页面
+            // }
         },
         methods: {
             ...mapMutations([
