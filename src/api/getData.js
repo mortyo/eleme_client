@@ -1,16 +1,23 @@
-import axios from 'axios';
-import qs from 'qs';
-import { getStore } from '../config/mUtils';
+import {getStore} from '../config/mUtils'
+import axios from 'axios'
 
 /**
  * 1-获取首页默认地址
  */
 
-export const cityGuess = () => axios.get('https://elm.cangdu.org/v1/cities', {
+export const cityGuess = () => axios.get('/v3/cities', {
 	params: {
 		type: 'guess'
 	}
 });
+
+
+/**
+ * 2-获取当前所在城市
+ */
+
+export const currentcity = number => axios.get('/v3/cities/'+number)
+
 
 /**
  * 3-获取搜索地址
@@ -43,23 +50,27 @@ export const msiteFoodTypes = () => axios.get('/v2/index_entry');
  * 6-获取msite商铺列表
  */
 
-export const shopList = (latitude, longitude, offset, restaurant_category_id, order_by, delivery_mode, support_ids) => {
+export const shopList = (latitude, longitude, offset, restaurant_category_id = '', restaurant_category_ids = '', order_by = '', delivery_mode = '', support_ids = []) => {
+	let supportStr = '';
+	support_ids.forEach(item => {
+		if (item.status) {
+			supportStr += '&support_ids[]=' + item.id;
+		}
+	});
 	let data = {
 		latitude,
 		longitude,
 		offset,
-		limit: '24',
+		limit: '20',
+		'extras[]': 'activities',
+		keyword: '',
 		restaurant_category_id,
+		'restaurant_category_ids[]': restaurant_category_ids,
 		order_by,
-		'delivery_mode[]': delivery_mode,
-		support_ids: support_ids,
+		'delivery_mode[]': delivery_mode + supportStr
 	};
 	return axios.get('/v2/shops', {
-		params: data,
-		//qs可以改变数组参数格式
-		paramsSerializer: params => {
-			return qs.stringify(params, { arrayFormat: 'brackets' })
-		}
+		params: data
 	});
 };
 
@@ -68,7 +79,7 @@ export const shopList = (latitude, longitude, offset, restaurant_category_id, or
  * 7-获取search页面搜索结果
  */
 
-export const searchRestaurant = (geohash, keyword) => axios.get('v2/shops/search', {
+export const searchRestaurant = (geohash, keyword) => axios.get('/v2/shops/search', {
 	params: {
 		'extras[]': 'restaurant_activity',
 		geohash,
@@ -95,11 +106,11 @@ export const foodCategory = (latitude, longitude) => axios.get('/v2/getCategorie
  */
 
 export const foodDelivery = (latitude, longitude) => axios.get('/v2/delivery_modes', {
-	// params: {
-		// latitude,
-		// longitude,
-		// kw: ''
-	// }
+	params: {
+		latitude,
+		longitude,
+		kw: ''
+	}
 });
 
 
@@ -108,11 +119,11 @@ export const foodDelivery = (latitude, longitude) => axios.get('/v2/delivery_mod
  */
 
 export const foodActivity = (latitude, longitude) => axios.get('/v2/activity_attributes', {
-	// params: {
-	// 	latitude,
-	// 	longitude,
-	// 	kw: ''
-	// }
+	params: {
+		latitude,
+		longitude,
+		kw: ''
+	}
 });
 
 
@@ -121,10 +132,10 @@ export const foodActivity = (latitude, longitude) => axios.get('/v2/activity_att
  */
 
 export const shopDetails = (shopid, latitude, longitude) => axios.get('/v2/shop/' + shopid, {
-	// params: {
-	// 	latitude,
-	// 	longitude: longitude + '&extras[]=activities&extras[]=album&extras[]=license&extras[]=identification&extras[]=statistics'
-	// }	
+	params: {
+		latitude,
+		longitude: longitude + '&extras[]=activities&extras[]=album&extras[]=license&extras[]=identification&extras[]=statistics'
+	}	
 });
 
 
@@ -133,9 +144,9 @@ export const shopDetails = (shopid, latitude, longitude) => axios.get('/v2/shop/
  * 12-获取shop页面菜单列表
  */
 
-export const foodMenu = restaurant_id => axios.get('/v2/allMenu', {
+export const foodMenu = shop_id => axios.get('/v2/shopmenu', {
 	params: {
-		restaurant_id
+		shop_id
 	}
 });
 
@@ -144,7 +155,7 @@ export const foodMenu = restaurant_id => axios.get('/v2/allMenu', {
  * 13-获取商铺评价列表
  */
 
-export const getRatingList = (shopid, offset, tag_name = '') => axios.get('/v2/Rate/' + shopid + '/ratings', {
+export const getRatingList = (shopid, offset, tag_name = '') => axios.get('v2/shop/' + shopid + '/ratings', {
 	params: {
 		has_content: true,
 		offset,
@@ -158,14 +169,14 @@ export const getRatingList = (shopid, offset, tag_name = '') => axios.get('/v2/R
  * 14-获取商铺评价分数
  */
 
-export const ratingScores = shopid => axios.get('/v2/Rate/' + shopid + '/scores');
+export const ratingScores = shopid => axios.get('/v2/shop/' + shopid + '/ratings/scores');
 
 
 /**
  * 15-获取商铺评价分类
  */
 
-export const ratingTags = shopid => axios.get('/v2/Rate/' + shopid + '/tags');
+export const ratingTags = shopid => axios.get('/v2/shop/' + shopid + '/ratings/tags');
 
 
 /**
@@ -180,7 +191,7 @@ export const getcaptchas = () => axios.post('/v4/captchas');
  * 17-确认订单
  */
 
-export const checkout = (geohash, entities, shopid) => axios.post('/v2/carts/checkout', {
+export const checkout = (geohash, entities, shopid) => axios.post('/v2/cart/checkout', {
 	come_from: "web",
 	geohash,
 	entities,
@@ -192,7 +203,7 @@ export const checkout = (geohash, entities, shopid) => axios.post('/v2/carts/che
  * 18-获取快速备注列表
  */
 
-export const getRemark = (id, sig) => axios.get('/v2/carts/' + id + '/remarks', {
+export const getRemark = (id, sig) => axios.get('/v2/cart/' + id + '/remarks', {
 	params: {
 		sig
 	}
@@ -203,11 +214,11 @@ export const getRemark = (id, sig) => axios.get('/v2/carts/' + id + '/remarks', 
  * 19-获取地址列表
  */
 
-export const getAddress = (id, sig) => axios.get('/v1/users/' + id + '/addresses', {
-	// params: {
-	// 	sig
-	// }
-});
+// export const getAddress = (id, sig) => axios.get('/v1/carts/' + id + '/addresses', {
+// 	params: {
+// 		sig
+// 	}
+// });
 
 
 /**
@@ -226,7 +237,7 @@ export const getAddress = (id, sig) => axios.get('/v1/users/' + id + '/addresses
  * 21-添加地址-post
  */
 
-export const postAddAddress = (userId, address, address_detail, geohash, name, phone, phone_bk, poi_type, sex, tag, tag_type) => axios.post('/v1/users/' + userId + '/addresses', {
+export const postAddAddress = (userId, address, address_detail, geohash, name, phone, phone_bk, poi_type, sex, tag, tag_type) => axios.post('/v1/user/' + userId + '/addAddress', {
 		address,
 		address_detail,
 		geohash,
@@ -241,10 +252,10 @@ export const postAddAddress = (userId, address, address_detail, geohash, name, p
 
 
 /**
- * 22-下订单-post,post购物车数据
+ * 22-下订单-post
  */
 
-export const placeOrders = (user_id, cart_id, address_id, description, entities, geohash, sig) => axios.post('/v1/users/' + user_id + '/carts/' + cart_id + '/orders', {
+export const placeOrders = (user_id, cart_id, address_id, description, entities, geohash, sig) => axios.post('/v1/user/' + user_id + '/cart/' + cart_id + '/order', {
 	address_id,
 	come_from: "mobile_web",
 	deliver_time: "",
@@ -281,7 +292,7 @@ export const placeOrders = (user_id, cart_id, address_id, description, entities,
 // 	sig,
 // 	validation_code,
 // 	validation_token
-// }) => axios.post('/v1/users/' + user_id + '/carts/' + cart_id + '/orders', {
+// }) => axios.post('/v2/user/' + user_id + '/cart/' + cart_id + '/order', {
 // 	address_id,
 // 	come_from: "mobile_web",
 // 	deliver_time: "",
@@ -300,13 +311,13 @@ export const placeOrders = (user_id, cart_id, address_id, description, entities,
  */
 
 export const payRequest = (merchantOrderNo, userId) => axios.get('/v4/payment', {
-	// params:{
-	// 	merchantId: 5,
-	// 	merchantOrderNo,
-	// 	source: 'MOBILE_WAP',
-	// 	userId,
-	// 	version: '1.0.0',
-	// }
+	params:{
+		merchantId: 5,
+		merchantOrderNo,
+		source: 'MOBILE_WAP',
+		userId,
+		version: '1.0.0',
+	}
 });
 
 
@@ -315,7 +326,7 @@ export const payRequest = (merchantOrderNo, userId) => axios.get('/v4/payment', 
  * 26-获取服务中心信息
  */
 
-// export const getService = () => axios.get('/v4/explain');
+export const getService = () => axios.get('/v4/explain');
 
 
 
@@ -334,7 +345,7 @@ export const payRequest = (merchantOrderNo, userId) => axios.get('/v4/payment', 
  * 28-获取红包
 */
 
-export const getHongbaoNum = id => axios.get('/v1/users/' + id + '/hongbaos?limit=20&offset=0');
+export const getHongbaoNum = id => axios.get('/v1/user/' + id + '/hongbaos?limit=20&offset=0');
 
 
 
@@ -343,14 +354,14 @@ export const getHongbaoNum = id => axios.get('/v1/users/' + id + '/hongbaos?limi
 */
 
 
-export const getExpired = id => axios.get('/v1/users/' + id + '/expired_hongbaos?limit=20&offset=0');
+export const getExpired = id => axios.get('/v1/user/' + id + '/expired_hongbaos?limit=20&offset=0');
 
 
 /**
  * 30-兑换红包-post
 */
 
-export const exChangeHongbao = (id, exchange_code, captcha_code) => axios.post('/v1/users/' + id + '/hongbao_exchange',{
+export const exChangeHongbao = (id, exchange_code, captcha_code) => axios.post('/v1/user/' + id + '/hongbao_exchange',{
 	exchange_code,
 	captcha_code,
 });
@@ -371,9 +382,9 @@ export const getUser = () => axios.get('/v1/user', {
  * 32-获取订单列表
  */
 
-export const getOrderList = (user_id, offset) => axios.get('/v1/users/' + user_id + '/orders', {
+export const getOrderList = (user_id, offset) => axios.get('v2/user/' + user_id + '/orders', {
 	params: {
-		limit: 5,
+		limit: 10,
 		offset:offset,
 	}
 });
@@ -383,14 +394,14 @@ export const getOrderList = (user_id, offset) => axios.get('/v1/users/' + user_i
  * 33-获取订单详情
  */
 
-export const getOrderDetail = (user_id, orderid) => axios.get('/v1/users/' + user_id + '/orders/' + orderid + '/snapshot');
+export const getOrderDetail = (user_id, orderid) => axios.get('/v2/user/' + user_id + '/order/' + orderid);
 
 
 /**
 *34-个人中心里编辑地址
 */
 
-export const getAddressList = (user_id) => axios.get('/v1/users/'+user_id+'/addresses')
+export const getAddressList = (user_id) => axios.get('/v1/user/'+user_id+'/getAddress')
 
 /**
 *35-个人中心里搜索地址
@@ -405,7 +416,7 @@ export const getAddressList = (user_id) => axios.get('/v1/users/'+user_id+'/addr
 * 36-删除地址
 */
 
-export const deleteAddress = (userid, addressid) => axios.delete( '/v1/users/' + userid + '/addresses/' + addressid)
+export const deleteAddress = (userid, addressid) => axios.get( '/v1/user/' + userid + '/address/' + addressid, {}, 'DELETE')
 
 
 
@@ -414,9 +425,9 @@ export const deleteAddress = (userid, addressid) => axios.delete( '/v1/users/' +
  */
 
 export const accountLogin = (username, password, captcha_code) => axios.post('/v1/login', {
-	username,
-	password, 
-	captcha_code
+	username:username,
+	password:password, 
+	captcha_code:captcha_code
 });
 
 
@@ -433,10 +444,9 @@ export const signout = () => axios.get('/v1/signout');
 export const changePassword = (username, oldpassWord, newpassword, confirmpassword, captcha_code) => fetch('/v1/changepassword', {username, oldpassWord, newpassword, confirmpassword, captcha_code}, 'POST');
 
 /**
- *40-改头像
-*/
-export const changeAvatar = (user_id,data) => fetch('/v1/users/'+user_id+'/avatar',{
-	method: 'POST',
+ * 40-改头像
+ */
+export const changeAvatar = (user_id,data) => axios.post('/v1/user/' + user_id + '/changeavatar', {
 	credentials: 'include',
 	body: data
-})
+  })

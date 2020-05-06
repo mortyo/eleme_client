@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <a href="http://localhost:8001/admin/index.html" style="text-align:center;"><h3>👉后台管理入口👈</h3></a>
         <!-- 搜索框 -->
         <form class="city_form" v-on:submit.prevent>
             <p class="tip">当前定位城市：<span>{{cityname}}</span></p>

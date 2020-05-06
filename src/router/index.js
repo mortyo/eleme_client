@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import {routerMode} from '../config/env'
 
 const home = r => require.ensure([], () => r(require('../views/home/home')), 'home')
 const msite = r => require.ensure([], () => r(require('../views/msite/msite')), 'msite')
@@ -33,7 +32,7 @@ const orderDetail = r => require.ensure([], () => r(require('../views/profile/ch
 const routes = [
     //空路径直接导航到/msite
     {
-        path: '',
+        path: '/',
         redirect: '/home'
     },
     //首页城市列表页
@@ -126,7 +125,7 @@ const routes = [
 Vue.use(VueRouter)
 const router = new VueRouter({
 	routes,
-	mode: routerMode,
+	// mode: 'history',
     strict: process.env.NODE_ENV !== 'production',  //在严格模式下，无论何时发生了状态变更且不是由 mutation 函数引起的，将会抛出错误。这能保证所有的状态变更都能被调试工具跟踪到
     // 路选项，滑动行为
 	// scrollBehavior (to, from, savedPosition) {
@@ -139,7 +138,8 @@ const router = new VueRouter({
 	// 		}
 	// 	    return { x: 0, y: to.meta.savedPosition || 0 }
     //     }
-	// }
+    // }
+    base: '/eleme/'
 })
 
 export default router

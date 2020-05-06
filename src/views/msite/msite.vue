@@ -20,7 +20,7 @@
 
 <script>
 import shopList from 'src/components/common/shoplist'
-import {mapMutations} from 'vuex'
+import { mapMutations } from 'vuex'
 import { msiteAddress, msiteFoodTypes } from 'src/api/getData'
 
 export default {

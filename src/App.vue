@@ -40,7 +40,7 @@
 <script>
 import { getStore } from './config/mUtils';
 import { mapState,mapActions,mapMutations } from 'vuex'
-import { imgBaseUrl } from 'src/config/env'
+// import { imgBaseUrl } from 'src/config/env'
 import { removeStore } from 'src/config/mUtils'
 import { signout } from 'src/api/getData'
 export default {
@@ -49,7 +49,7 @@ export default {
 			avatar: '',
 			keyword: '', //搜索关键字
 			// search_show: false,  //是否显示搜索框
-			imgBaseUrl,
+			imgBaseUrl:'/img/',
 			centerDialogVisible: false
 		}
 	},
